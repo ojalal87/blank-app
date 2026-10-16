@@ -54,6 +54,24 @@ jobs:
         if: always()
         run: ./gradlew :app:assembleRelease
 
+      - name: Summarize test and lint results
+        if: always()
+        run: |
+          python3 - <<'PY' | tee -a "$GITHUB_STEP_SUMMARY"
+          import glob, xml.etree.ElementTree as ET, collections
+          for mod in ("core", "app"):
+              t = f = e = s = 0
+              for p in glob.glob(f"{mod}/build/test-results/**/TEST-*.xml", recursive=True):
+                  r = ET.parse(p).getroot()
+                  t += int(r.get("tests")); f += int(r.get("failures")); e += int(r.get("errors")); s += int(r.get("skipped"))
+              print(f"- {mod} tests: {t} run, {f} failed, {e} errors, {s} skipped")
+          for p in glob.glob("app/build/reports/lint-results-debug.xml"):
+              c = collections.Counter((i.get("severity"), i.get("id")) for i in ET.parse(p).getroot().iter("issue"))
+              print(f"- lint: {sum(v for (sev, _), v in c.items() if sev in ('Error', 'Fatal'))} errors, {sum(v for (sev, _), v in c.items() if sev == 'Warning')} warnings")
+              for (sev, i), v in sorted(c.items()):
+                  print(f"  - {sev} {i}: {v}")
+          PY
+
       - name: Upload debug APK
         if: always()
         uses: actions/upload-artifact@v4
