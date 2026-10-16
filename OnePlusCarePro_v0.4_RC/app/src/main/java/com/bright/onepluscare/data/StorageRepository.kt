@@ -94,7 +94,7 @@ class StorageRepository(private val context: Context) {
     fun accessMode(): StorageAccessMode {
         val sdk = Build.VERSION.SDK_INT
         fun granted(p: String) = context.checkSelfPermission(p) == PackageManager.PERMISSION_GRANTED
-        val manager = Build.VERSION.SDK_INT >= 30 && Environment.isExternalStorageManager()
+        val manager = Build.VERSION.SDK_INT >= 30 && runCatching { Environment.isExternalStorageManager() }.getOrDefault(false)
         val legacyWrite = Build.VERSION.SDK_INT <= 29 && granted(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         val mediaRead = when {
             Build.VERSION.SDK_INT >= 33 -> granted(Manifest.permission.READ_MEDIA_IMAGES) || granted(Manifest.permission.READ_MEDIA_VIDEO) || granted(Manifest.permission.READ_MEDIA_AUDIO)

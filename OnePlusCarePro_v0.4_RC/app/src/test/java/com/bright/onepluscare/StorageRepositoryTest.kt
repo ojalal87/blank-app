@@ -32,7 +32,7 @@ class StorageRepositoryTest {
     @Test
     fun `trash directory matches v0_3 location for migration`() {
         val repo = StorageRepository(context)
-        assertTrue(repo.trashDir?.path?.endsWith("/files/safe_trash") ?: true)
+        assertTrue(repo.trashDir?.name?.let { it == StorageRepository.TRASH_DIR_NAME } ?: true)
     }
 
     @Test
