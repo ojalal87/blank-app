@@ -21,6 +21,7 @@ import com.bright.onepluscare.data.SystemIntents
 import com.bright.onepluscare.shizuku.ShizukuGateway
 import com.bright.onepluscare.work.MaintenanceScheduler
 import com.bright.onepluscare.work.Notifications
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -43,7 +44,8 @@ data class SharedResults(
 /** Manual dependency container. One instance per process, owned by [CareApplication]. */
 class AppGraph(context: Context) {
     val appContext: Context = context.applicationContext
-    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    /** Background failures are contained here and never crash the process. */
+    val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default + CoroutineExceptionHandler { _, _ -> })
 
     val settings = SettingsRepository(appContext)
     val history = HistoryRepository(appContext)
@@ -70,6 +72,15 @@ class AppGraph(context: Context) {
     private val _startupDone = MutableStateFlow(false)
     val startupDone: StateFlow<Boolean> = _startupDone.asStateFlow()
 
+    private inline fun step(block: () -> Unit) {
+        try {
+            block()
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Exception) {
+        }
+    }
+
     fun updateResults(transform: (SharedResults) -> SharedResults) {
         synchronized(_results) { _results.value = transform(_results.value) }
     }
@@ -91,21 +102,25 @@ class AppGraph(context: Context) {
      * the background worker.
      */
     fun startup(): Job = scope.launch(Dispatchers.IO) {
-        try {
+        // Each step is independent: one failing (e.g. WorkManager unavailable) must not skip the others.
+        step {
             LegacyMigrator(appContext, history, storage).migrateOnce()
             settings.reload()
+        }
+        step {
             val report = storage.reconcile()
             if (report.changed) {
                 history.add(HistoryType.RECOVERY, count = report.completedMoves + report.rolledBackMoves + report.completedRestores + report.rolledBackRestores + report.adoptedOrphans)
             }
+        }
+        step {
             val expired = storage.expire(settings.settings.value.trashRetentionDays)
             if (expired.purgedIds.isNotEmpty()) history.add(HistoryType.EXPIRY, count = expired.purgedIds.size, bytes = expired.bytesFreed)
-            trashChanged()
-            Notifications.ensureChannels(appContext)
-            scheduler.apply(settings.settings.value.dailyScanEnabled)
-        } finally {
-            _startupDone.value = true
         }
-        shizuku.start()
+        trashChanged()
+        step { Notifications.ensureChannels(appContext) }
+        step { scheduler.apply(settings.settings.value.dailyScanEnabled) }
+        _startupDone.value = true
+        step { shizuku.start() }
     }
 }

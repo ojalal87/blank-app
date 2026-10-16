@@ -89,6 +89,6 @@ class ComposeScreensTest {
         compose.onNodeWithText(s(R.string.action_skip)).performClick()
         compose.waitUntil(10_000) { compose.onAllNodes(androidx.compose.ui.test.hasText(s(R.string.action_run_smart_scan))).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText(s(R.string.tab_tools)).performClick()
-        compose.onNodeWithText(s(R.string.screen_trash)).assertIsDisplayed()
+        compose.onNodeWithText(s(R.string.screen_battery)).assertIsDisplayed()
     }
 }
