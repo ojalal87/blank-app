@@ -27,7 +27,7 @@ class WorkerSafetyTest {
         app.graph.startup().join()
         val trashDir = app.graph.storage.trashDir
         val before = trashDir?.listFiles()?.size ?: 0
-        val sentinel = File(context.getExternalFilesDir(null), "sentinel.tmp").apply { parentFile?.mkdirs(); writeText("x") }
+        val sentinel = File(context.filesDir, "sentinel.tmp").apply { parentFile?.mkdirs(); writeText("x") }
 
         val worker = TestListenableWorkerBuilder<MaintenanceScanWorker>(context).build()
         val result = worker.doWork()

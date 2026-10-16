@@ -67,7 +67,8 @@ class StorageRepository(private val context: Context) {
     private val resolver: ContentResolver = context.contentResolver
 
     /** Null when shared storage is not mounted; Safe Trash is then unavailable. */
-    val trashDir: File? = context.getExternalFilesDir(null)?.let { File(it, TRASH_DIR_NAME) }
+    // getExternalFilesDir can throw when no external volume is registered (some OEM boot states, Robolectric).
+    val trashDir: File? = runCatching { context.getExternalFilesDir(null) }.getOrNull()?.let { File(it, TRASH_DIR_NAME) }
 
     private val storageRoot: Path? = try {
         Environment.getExternalStorageDirectory()?.toPath()?.toRealPath()
