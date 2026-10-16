@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -78,7 +77,6 @@ fun HomeScreen(nav: Navigator, padding: PaddingValues) {
     val vm: HomeViewModel = careViewModel()
     val s by vm.state.collectAsStateWithLifecycle()
     val graph = LocalAppGraph.current
-    val context = LocalContext.current
 
     ScreenScaffold(
         title = stringResource(R.string.app_name),
@@ -112,7 +110,7 @@ fun HomeScreen(nav: Navigator, padding: PaddingValues) {
                     }
                     val worst = health.factors.filter { it.state == health.state && it.state != HealthState.HEALTHY }
                     Text(
-                        if (worst.isEmpty()) stringResource(R.string.home_all_good) else worst.joinToString(" · ") { context.getString(Labels.healthReason(it.reason)) },
+                        if (worst.isEmpty()) stringResource(R.string.home_all_good) else worst.map { stringResource(Labels.healthReason(it.reason)) }.joinToString(" · "),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )

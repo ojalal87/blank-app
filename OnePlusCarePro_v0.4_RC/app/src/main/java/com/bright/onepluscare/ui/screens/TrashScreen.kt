@@ -52,7 +52,6 @@ import com.bright.onepluscare.ui.vm.careViewModel
 fun TrashScreen(nav: Navigator, padding: PaddingValues) {
     val vm: TrashViewModel = careViewModel()
     val s by vm.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
 
     ScreenScaffold(title = stringResource(R.string.screen_trash), outerPadding = padding, onBack = nav.back, message = s.message, onMessageShown = vm::messageShown) {
         if (!s.safeTrashAvailable) {
@@ -108,7 +107,7 @@ fun TrashScreen(nav: Navigator, padding: PaddingValues) {
     s.purge?.let { p ->
         ConfirmDialog(
             title = stringResource(R.string.confirm_purge_title),
-            body = context.getString(R.string.confirm_purge_body, p.count, Fmt.bytes(context, p.bytes)),
+            body = stringResource(R.string.confirm_purge_body, p.count, bytesText(p.bytes)),
             confirmLabel = stringResource(R.string.action_delete_permanently),
             irreversible = true,
             onConfirm = vm::confirmPurge,

@@ -45,9 +45,11 @@ class NetworkRepository(private val context: Context) {
         val connected = caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
 
         val gatewayAddr = props?.let(::defaultGateway)
-        val gateway = if (connected && network != null && gatewayAddr != null) probeGateway(network, gatewayAddr) else Probe(ProbeStatus.NOT_RUN)
-        val dns = if (connected && network != null) probeDns(network) else Probe(ProbeStatus.NOT_RUN)
-        val https = if (connected && network != null && dns.status == ProbeStatus.OK) probeHttps(network) else Probe(ProbeStatus.NOT_RUN)
+        // `connected` implies a non-null network (caps came from it).
+        val active = network.takeIf { connected }
+        val gateway = if (active != null && gatewayAddr != null) probeGateway(active, gatewayAddr) else Probe(ProbeStatus.NOT_RUN)
+        val dns = if (active != null) probeDns(active) else Probe(ProbeStatus.NOT_RUN)
+        val https = if (active != null && dns.status == ProbeStatus.OK) probeHttps(active) else Probe(ProbeStatus.NOT_RUN)
 
         val snapshot = NetworkSnapshot(
             connected = connected,

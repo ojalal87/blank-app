@@ -77,6 +77,8 @@ android {
         disable += setOf("ProtectedPermissions", "ScopedStorage")
         xmlReport = true
         htmlReport = true
+        textReport = true
+        textOutput = file("stdout")
     }
 
     testOptions {

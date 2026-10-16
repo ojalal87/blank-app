@@ -103,11 +103,8 @@ private fun HistoryRow(e: HistoryEvent) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(Modifier.weight(1f)) {
                 Text(stringResource(Labels.history(e.type)), style = MaterialTheme.typography.titleSmall)
-                val parts = buildList {
-                    add(Fmt.dateTime(context, e.timestampMillis))
-                    if (e.count > 0) add(context.getString(R.string.history_items, e.count))
-                    e.legacyText?.let { add(it) }
-                }
+                val items = if (e.count > 0) stringResource(R.string.history_items, e.count) else null
+                val parts = listOfNotNull(Fmt.dateTime(context, e.timestampMillis), items, e.legacyText)
                 Text(parts.joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             if (e.bytes > 0) Text(bytesText(e.bytes), style = MaterialTheme.typography.labelLarge)

@@ -119,13 +119,10 @@ fun AccessModeNotice(mode: StorageAccessMode, nav: Navigator) {
 
 @Composable
 fun TrashConfirmDialog(c: TrashConfirmation, onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    val context = LocalContext.current
-    val body = buildString {
-        append(context.getString(R.string.confirm_trash_body, c.files.size, Fmt.bytes(context, c.bytes)))
-        append("\n\n")
-        append(context.getString(if (c.systemTrash) R.string.confirm_trash_system else R.string.confirm_trash_safe))
-        if (c.protectedKeepers > 0) append("\n\n").append(context.getString(R.string.confirm_keepers_protected, c.protectedKeepers))
-    }
+    val counts = stringResource(R.string.confirm_trash_body, c.files.size, bytesText(c.bytes))
+    val where = stringResource(if (c.systemTrash) R.string.confirm_trash_system else R.string.confirm_trash_safe)
+    val keepers = if (c.protectedKeepers > 0) stringResource(R.string.confirm_keepers_protected, c.protectedKeepers) else null
+    val body = listOfNotNull(counts, where, keepers).joinToString("\n\n")
     ConfirmDialog(
         title = stringResource(R.string.confirm_trash_title),
         body = body,
