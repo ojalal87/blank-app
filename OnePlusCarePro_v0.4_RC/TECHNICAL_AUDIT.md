@@ -17,8 +17,9 @@ covers build, architecture, correctness, Android-API usage and product honesty (
 | TA-07 | Launcher icon was a raw vector `drawable` (no adaptive icon, no monochrome). | Adaptive icon with monochrome layer (Android 13 themed icons). |
 | TA-08 | AIDL kept but ProGuard rules referenced a class in the root package only. | Rules updated for the new package; kotlinx-serialization keep rules. |
 
-**Verification:** the real Android build ran in GitHub Actions (`.github/workflows/oneplus-care-v04.yml`);
-see `TEST_REPORT.md` for each step's actual result. The local environment had no Google Maven access.
+**Verification:** the real Android build ran in GitHub Actions (`.github/workflows/oneplus-care-v04.yml`):
+debug APK, R8 release, lint (0 errors), 84 core + 20 app tests all pass on run 38978365442. See
+`TEST_REPORT.md`. The authoring environment had no Google Maven access.
 
 ## 2. Architecture
 
@@ -40,6 +41,7 @@ see `TEST_REPORT.md` for each step's actual result. The local environment had no
 | TA-23 | Recursive scan built a full list before showing anything. | Walker reports progress every 250 files; MediaStore every 500 rows; determinate bars when totals are known. |
 | TA-24 | `MaintenanceScanWorker` returned `Result.retry()` forever on any exception. | Retries twice, then `failure()`; cancellation propagated. |
 | TA-25 | `Shizuku` permission listener registered in Activity; binder-death not handled. | `ShizukuGateway` registers sticky binder-received, binder-dead and permission listeners once; status as `StateFlow`. |
+| TA-27 | (found during v0.4 CI) `getExternalFilesDir()` / `isExternalStorageManager()` throw when no external volume is registered; a single failing startup step aborted recovery and expiry and could crash the process. | Guarded calls; each startup step isolated; app scope has a `CoroutineExceptionHandler`. |
 | TA-26 | System trash `IntentSender` launched from a click lambda; result handler relied on mutable composition state (lost on rotation). | Pending request in ViewModel with `launched` flag; single `ActivityResultHost`. |
 
 ## 4. Storage and Android 11–16 correctness
