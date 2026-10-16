@@ -1,0 +1,76 @@
+name: OnePlus Care Pro v0.4 RC
+
+on:
+  push:
+    paths:
+      - "OnePlusCarePro_v0.4_RC/**"
+      - ".github/workflows/oneplus-care-v04.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: oneplus-care-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: OnePlusCarePro_v0.4_RC
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Generated strings are up to date
+        run: |
+          python3 -I tools/gen_strings.py .
+          git diff --exit-code -- app/src/main/res/values/strings.xml app/src/main/res/values-ar/strings.xml
+
+      - name: Core unit tests (JVM)
+        run: ./gradlew --no-configuration-cache :core:test
+
+      - name: Assemble debug APK
+        run: ./gradlew :app:assembleDebug
+
+      - name: App unit tests (Robolectric)
+        if: always()
+        run: ./gradlew :app:testDebugUnitTest
+
+      - name: Android lint
+        if: always()
+        run: ./gradlew :app:lintDebug
+
+      - name: Release build (R8, unsigned unless signing secrets are configured)
+        if: always()
+        run: ./gradlew :app:assembleRelease
+
+      - name: Upload debug APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oneplus-care-debug-apk
+          path: OnePlusCarePro_v0.4_RC/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: warn
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: oneplus-care-reports
+          path: |
+            OnePlusCarePro_v0.4_RC/core/build/reports/
+            OnePlusCarePro_v0.4_RC/core/build/test-results/
+            OnePlusCarePro_v0.4_RC/app/build/reports/
+            OnePlusCarePro_v0.4_RC/app/build/test-results/
+            OnePlusCarePro_v0.4_RC/app/build/outputs/mapping/
+          if-no-files-found: warn

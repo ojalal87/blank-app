@@ -28,7 +28,7 @@ data class AppRecord(
     val totalBytes: Long? get() = if (packageBytes != null && dataBytes != null) packageBytes + dataBytes else null
 }
 
-enum class SensitivePermission { CAMERA, MICROPHONE, LOCATION, BACKGROUND_LOCATION, CONTACTS, CALL_LOG, SMS, PHONE, BODY_SENSORS, NEARBY_DEVICES, ALL_FILES }
+enum class SensitivePermission { CAMERA, MICROPHONE, LOCATION, BACKGROUND_LOCATION, CONTACTS, CALL_LOG, SMS, PHONE, BODY_SENSORS, NEARBY_DEVICES }
 
 enum class AppFlag { UNUSED_LONG, LARGE_CACHE, HEAVY_USE, SENSITIVE_AND_UNUSED, BATTERY_EXEMPT }
 

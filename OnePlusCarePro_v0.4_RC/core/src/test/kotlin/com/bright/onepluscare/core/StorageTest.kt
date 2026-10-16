@@ -210,3 +210,26 @@ class CleanupClassifierTest {
     @Suppress("unused")
     private fun touch(p: Path, millis: Long) = Files.setLastModifiedTime(p, FileTime.fromMillis(millis))
 }
+
+class MediaUriPolicyTest {
+    @Test
+    fun `accepts MediaStore item uris only`() {
+        listOf(
+            "content://media/external/images/media/42",
+            "content://media/external_primary/video/media/7",
+            "content://media/external/file/123",
+            "content://media/external/audio/media/9",
+        ).forEach { assertTrue(com.bright.onepluscare.core.storage.MediaUriPolicy.isMediaStoreItem(it), it) }
+        listOf(
+            null,
+            "content://com.evil.provider/files/1",
+            "content://media/external/images/media/",
+            "content://media/external/images/media/1?x=1",
+            "content://media/external/images/media/1#f",
+            "content://user@media/external/images/media/1",
+            "content://media/external/images/media/%2e%2e/1",
+            "file:///sdcard/a.jpg",
+            "content://media/external/images/media/../../x/1",
+        ).forEach { assertFalse(com.bright.onepluscare.core.storage.MediaUriPolicy.isMediaStoreItem(it), it.toString()) }
+    }
+}

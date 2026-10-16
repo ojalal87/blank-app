@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shield + pulse mark (original artwork; not a OnePlus trademark). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="@color/launcher_accent"
+        android:strokeWidth="5"
+        android:strokeLineJoin="round"
+        android:pathData="M54,30 L74,37 L74,53 C74,65 65,74 54,79 C43,74 34,65 34,53 L34,37 Z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M42,55 L49,55 L52,48 L57,62 L60,55 L66,55" />
+</vector>
