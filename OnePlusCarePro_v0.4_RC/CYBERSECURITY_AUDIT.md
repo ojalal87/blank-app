@@ -26,7 +26,7 @@ Each regression test named below is in `core/src/test` (JVM) or `app/src/test` (
 | SEC-09 | Shizuku output not size-capped / scrubbed before crossing Binder | Low | Fixed |
 | SEC-10 | Diagnostic export included DNS server IPs, Private DNS hostname; probes ran during export | Medium | Fixed |
 | SEC-11 | History stored absolute restore paths (file names) | Medium | Fixed |
-| SEC-12 | `QUERY_ALL_PACKAGES` over-broad package visibility | Medium | Fixed |
+| SEC-12 | `QUERY_ALL_PACKAGES` over-broad package visibility | Medium | Fixed in rc1; re-added with justification in rc3 (SEC-32) |
 | SEC-13 | No network security config; cleartext implicitly allowed; user CAs trusted on old APIs | Low | Fixed |
 | SEC-14 | Backup rules backed up all prefs except two (history incl.) | Low | Fixed |
 | SEC-15 | Notification content visible on lock screen | Low | Fixed |
@@ -227,6 +227,17 @@ read-only to **allow-listed write**. Design and controls:
 Residual risk: OEM builds can attach unexpected behaviour to packages outside the curated list (expert
 mode). Mitigation is the reversible default, the always-available restore, and the warning copy.
 Shizuku itself and the user's choice to grant it remain outside this app's control.
+
+## rc3 addendum — Security Center (scan, anti-stalkerware, firewall)
+
+| ID | Risk | Control | Test |
+|---|---|---|---|
+| SEC-32 | Re-adding `QUERY_ALL_PACKAGES` (reverses SEC-12) widens what the app can see | Needed because stalkerware hides its launcher icon, which a launcher-only `<queries>` cannot see; this is Google Play's "device security / antivirus" permitted use. The list is processed in memory only; package names are never stored, logged, exported or sent. App Doctor still lists launchable apps only. | `ManifestSecurityTest` |
+| SEC-33 | Tampered or hostile indicator list (download) | Bundled snapshot in the APK; update only when the user taps it; HTTPS with system CAs only (network security config), no redirects, 2 MB cap enforced while reading, tolerant line parser (no YAML library, no object deserialization), package/cert values validated by regex; a list with fewer than 50 families is rejected and the current one kept; written atomically. Worst case of a malicious list is false matches shown to the user, never an action. | `IocDatabaseTest` |
+| SEC-34 | False positives push users into removing legitimate apps | Findings are graded and explained; no automatic action; removal always happens in Android's own App info screen; system apps are never flagged; UI states that a flag is not proof. | `AppRiskScannerTest` |
+| SEC-35 | Firewall VPN cuts off the whole phone or inspects traffic | `VpnService` is given only the blocked apps via `addAllowedApplication`; an empty list never establishes (Android would route all apps); uninstalled apps are skipped and if none remain it stops. Packets are read and discarded, never parsed, logged or forwarded. Other apps never enter the tunnel. | `FirewallRulesTest` |
+| SEC-36 | Firewall service abused by other apps / hidden persistence | Service not exported and protected by `BIND_VPN_SERVICE` (system only); started only from the Firewall screen after system VPN consent; no boot receiver; persistence only through Android's user-controlled Always-on VPN. Blocked list in `care_firewall.xml`, excluded from backup. | `firewall VPN service is bindable only by the system` |
+| SEC-37 | Stalkerware victim safety | App detail warns that removal can alert the installer and suggests support organisations before removal. | — |
 
 ## Areas reviewed with no finding
 

@@ -19,6 +19,7 @@ OnePlusCarePro_v0.4_RC/
 │       ├── apps/         AppRecord, AppEvaluator (flags, search, sort)
 │       ├── diagnostics/  DiagnosticReportBuilder, Redactor
 │       ├── advanced/     AdvancedDiagnostic / AdvancedAllowList / OutputSanitizer (Shizuku contract)
+│       ├── security/     StalkerwareIoc (IocDatabase), AppRiskScanner, FirewallRules
 │       ├── migration/    LegacyMigration (v0.3 SharedPreferences → v0.4 stores)
 │       ├── session/      MaintenanceSession (attributed Before/After)
 │       ├── settings/     AppSettings (+ sanitization)
@@ -137,6 +138,19 @@ ShizukuGateway.runOp(TweakOp JSON) → AdvancedMaintenanceService.runOp → Twea
 ```
 All decision logic (allow-lists, protected packages, planners, parsers, journal) is in `core/tweaks` and
 unit-tested on the JVM.
+
+## Security Center
+
+```
+SecurityViewModel → SecurityRepository ─ PackageManager facts (permissions, installer, signing SHA-1,
+                                          launcher icon) + Settings.Secure accessibility / listeners,
+                                          DevicePolicyManager admins, default SMS
+                                       ─ IocDatabase (assets/stalkerware_ioc.yaml or files/, user-tapped update)
+                                       ─ core AppRiskScanner.scan → ScanSummary (in memory only)
+Firewall screen → FirewallStore (blocked set) → VpnService.prepare consent (ActivityResultHost)
+               → FirewallVpnService: addAllowedApplication(blocked only) → tun read-and-discard
+```
+Rules, the IOC parser and `FirewallRules` (never start with an empty list) are in `core/security`.
 
 ## Dependencies
 

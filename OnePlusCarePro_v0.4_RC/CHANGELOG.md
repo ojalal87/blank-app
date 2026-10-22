@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.4.0-rc3 — Security Center
+- **Security scan** (Tools → Protection): checks all installed apps against the public Echap stalkerware
+  indicator list (package names and signing certificates, bundled; updated only when you tap Update) and
+  flags risky capability combinations (banking-malware pattern, hidden apps with spying powers,
+  accessibility / notification access / device admin, sideloaded SMS access, legacy permission model).
+  Each finding is explained, with actions that open Android's own screens.
+- **"Who can watch you"**: every app with accessibility, notification access or device admin.
+- **Firewall** (no root): local VPN that blocks internet only for the apps you choose; other apps never
+  pass through it.
+- Honest limits stated in the UI: no app can see other apps' code on Android; Play Protect stays on.
+- `QUERY_ALL_PACKAGES` re-added for the security scan (CYBERSECURITY_AUDIT.md SEC-32…37).
+
 ## v0.4.0-rc2 — System Tuner (Shizuku)
 - New **System Tuner**: OxygenOS fixes (keep chosen apps alive in background, Android 14 child-process
   limit, Private DNS presets incl. ad-blocking), preinstalled-app removal with risk tiers and one-tap
