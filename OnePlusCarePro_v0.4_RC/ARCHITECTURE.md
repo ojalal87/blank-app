@@ -127,6 +127,17 @@ app process ──bindUserService──► Shizuku server ──► AdvancedMain
 * Shizuku is optional. With it absent, not running, or denied, the Advanced screen explains the state and
   everything else is unaffected.
 
+## System Tuner (Shizuku write path)
+
+```
+TunerViewModel → TweaksRepository ─ read current state (read-only TweakOps)
+                                   ─ TweakPlanner → TweakChange(apply, undo)
+                                   ─ TweakExecutor: journal.begin → run ops → rollback on failure → journal.mark
+ShizukuGateway.runOp(TweakOp JSON) → AdvancedMaintenanceService.runOp → TweakCommands.argvFor (re-validate) → ProcessBuilder
+```
+All decision logic (allow-lists, protected packages, planners, parsers, journal) is in `core/tweaks` and
+unit-tested on the JVM.
+
 ## Dependencies
 
 All versions live in `gradle/libs.versions.toml`. `core` depends only on kotlinx-coroutines-core and

@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.4.0-rc2 — System Tuner (Shizuku)
+- New **System Tuner**: OxygenOS fixes (keep chosen apps alive in background, Android 14 child-process
+  limit, Private DNS presets incl. ad-blocking), preinstalled-app removal with risk tiers and one-tap
+  restore, display & animations (animation speed, pinned refresh rate, bounded screen density),
+  and a Changes & undo screen with Undo all.
+- Shizuku setup guide (English/Arabic) inside the app.
+- Permission Center explains Android 13+ "restricted settings" for sideloaded installs.
+- Security: typed, service-side-validated operations; see CYBERSECURITY_AUDIT.md SEC-26…31.
+
 ## v0.4.0-rc1 — Audit, hardening and redesign
 
 ### Architecture

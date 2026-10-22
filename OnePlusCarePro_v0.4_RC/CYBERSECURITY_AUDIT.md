@@ -209,6 +209,25 @@ When Shizuku runs as root the same allow-list applies; the UI shows a warning re
 No OWASP Dependency-Check / OSV scan could run here (Google Maven blocked). The CI workflow is the place
 to add `osv-scanner` or Gradle dependency verification metadata (`gradle/verification-metadata.xml`).
 
+## v0.4 addendum — System Tuner (Shizuku write access)
+
+Product requirement changed after the RC: the owner asked for OxygenOS fixes, preinstalled-app removal and
+display/animation tuning. These require writing system state, so the Shizuku boundary moved from
+read-only to **allow-listed write**. Design and controls:
+
+| ID | Risk | Control | Test |
+|---|---|---|---|
+| SEC-26 | Caller (or a compromised app process) sends arbitrary commands to the shell/root service | `runOp` accepts only a JSON `TweakOp`; the **service** re-validates with `TweakCommands.argvFor` (fixed binaries, allow-listed setting keys with per-key value rules, two app-ops, five standby buckets, package-name regex, DPI bounds). Unknown/malformed JSON is refused; argv goes to `ProcessBuilder` without a shell. | `TweakCommandsTest` (injection strings, wrong namespace, out-of-range values, hostile JSON) |
+| SEC-27 | Disabling a critical package bricks the phone (boot loop, no dialer, no emergency alerts) | `DebloatClassifier` protects system UI, telephony/IMS, Play services, installers, WebView, providers, network stack, emergency/cell-broadcast, Qualcomm modem, any launcher/keyboard by name; the app adds the *current* launcher and IME at runtime. Protection is enforced in the service too. Default action is `disable-user` (reversible); "remove" is `uninstall -k --user 0` (APK stays on /system, `install-existing` restores). Unknown packages only appear in expert mode with a warning. | `protected packages … can never be removed`, `inventory …` |
+| SEC-28 | Partial change leaves the system in a mixed state | Every change is planned from the current state, journaled before execution (`TweakJournal`, atomic file), applied op by op; first failure triggers rollback with the recorded undo ops. Same-slot changes inherit the original undo. "Undo all" restores newest-first. | `executor applies, journals and reverts…`, `failure mid-change rolls back` |
+| SEC-29 | Display density makes the UI unusable | Density limited to ±25 % of the panel's physical density (and 120–960 dpi in the service); confirmation dialog; undo restores the previous override or resets. | `density stays within 25 percent of physical`, `density limits` |
+| SEC-30 | Privacy: listing all system packages via shell | Package list stays in memory on the device; never stored, exported or logged. | — |
+| SEC-31 | Root-mode Shizuku amplifies any mistake | Same allow-list in root mode; UI marks root mode with an attention badge. | — |
+
+Residual risk: OEM builds can attach unexpected behaviour to packages outside the curated list (expert
+mode). Mitigation is the reversible default, the always-available restore, and the warning copy.
+Shizuku itself and the user's choice to grant it remain outside this app's control.
+
 ## Areas reviewed with no finding
 
 * **Intents / deep links:** one exported activity (launcher), no `<data>` filters, no extras read.

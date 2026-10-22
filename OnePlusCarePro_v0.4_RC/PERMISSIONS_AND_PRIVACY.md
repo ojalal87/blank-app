@@ -61,7 +61,14 @@ public version ("Maintenance scan finished"). Levels: Never / Only critical / Im
 
 ## Shizuku
 
-Optional. The UserService can read 10 allow-listed build properties (none is a per-device identifier)
+Optional. **System Tuner** (added after the RC) uses Shizuku to apply allow-listed, reversible changes:
+battery-optimization exemption and background app-ops for apps the user picks, standby bucket, preinstalled
+app disable/remove-for-user (protected packages excluded), animation scales, peak/min refresh rate, display
+density (bounded), Private DNS presets, and the Android 14 child-process restriction toggle. Every change is
+journaled in `files/tweak_journal.json` (not backed up) with its exact undo. The system package list is read
+on demand and kept in memory only.
+
+For diagnostics: The UserService can read 10 allow-listed build properties (none is a per-device identifier)
 and run three fixed diagnostics (`dumpsys battery`, `dumpsys thermalservice`, `df -h /data`). Output is
 truncated and scrubbed of serial/IMEI/MAC patterns. It cannot run arbitrary commands, write files,
 change settings or manage packages. See `CYBERSECURITY_AUDIT.md` SEC-08/09/24.
