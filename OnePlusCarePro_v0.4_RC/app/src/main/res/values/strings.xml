@@ -144,6 +144,9 @@
     <string name="ab_copy">Copy</string>
     <string name="ab_alt_note">Settings → Network &amp; internet → Private DNS → Private DNS provider hostname. The provider (AdGuard) then sees which sites you look up.</string>
     <string name="ab_limits">Limits: apps that use their own encrypted DNS (for example some browsers\' secure DNS) or fixed addresses are not filtered, and ads served from the same host as the content cannot be blocked by DNS.</string>
+    <string name="home_adblock">Ad blocking</string>
+    <string name="home_fw_blocking">%1$d apps blocked here</string>
+    <string name="home_ab_blocked">%1$d blocked</string>
     <string name="hr_storage_ok">Storage has enough free space</string>
     <string name="hr_storage_low">Free storage is below 10 percent</string>
     <string name="hr_storage_critical">Free storage is critically low</string>

@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.4.0-rc4 — Per-network firewall, data usage, ad blocking
+- **Firewall per network**: block Wi-Fi, mobile data or both for each app. The VPN follows network
+  switches and contains only the apps blocked on the current network; when nothing is blocked there it
+  holds only this app (never an empty allow-list, which Android would treat as "all apps").
+- **Data usage** (Tools → Diagnostics): per-app Wi-Fi / mobile / background bytes for today, 7 or 30 days
+  from Android's NetworkStatsManager, and "unusual background upload today" against the app's own last 14
+  days (robust median/MAD baseline; worded as unusual, never as malware). Block on Wi-Fi/mobile from a row.
+- **Ad & tracker blocking**: DNS-only local VPN (blocked hosts → NXDOMAIN, others forwarded to the
+  network's own DNS), StevenBlack hosts list downloaded on tap, per-host exceptions, most-blocked hosts in
+  memory only. Mutually exclusive with the firewall (one VPN at a time); Private DNS provider offered as the
+  option that works alongside the firewall. Warns when Private DNS strict mode bypasses it.
+- Home shows firewall and ad-blocking state.
+
 ## v0.4.0-rc3 — Security Center
 - **Security scan** (Tools → Protection): checks all installed apps against the public Echap stalkerware
   indicator list (package names and signing certificates, bundled; updated only when you tap Update) and

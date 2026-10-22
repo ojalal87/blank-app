@@ -143,6 +143,9 @@
     <string name="ab_copy">نسخ</string>
     <string name="ab_alt_note">الإعدادات ← الشبكة والإنترنت ← DNS الخاص ← اسم مضيف مزوّد DNS الخاص. سيرى المزوّد (AdGuard) المواقع التي تبحث عنها.</string>
     <string name="ab_limits">الحدود: التطبيقات التي تستخدم DNS مشفّرًا خاصًا بها (مثل DNS الآمن في بعض المتصفحات) أو عناوين ثابتة لا تُصفّى، والإعلانات التي تأتي من نفس عنوان المحتوى لا يمكن حظرها عبر DNS.</string>
+    <string name="home_adblock">حظر الإعلانات</string>
+    <string name="home_fw_blocking">%1$d تطبيقات محظورة هنا</string>
+    <string name="home_ab_blocked">حُظر %1$d</string>
     <string name="hr_storage_ok">مساحة التخزين المتاحة كافية</string>
     <string name="hr_storage_low">المساحة المتاحة أقل من 10 بالمئة</string>
     <string name="hr_storage_critical">المساحة المتاحة منخفضة بشكل حرج</string>

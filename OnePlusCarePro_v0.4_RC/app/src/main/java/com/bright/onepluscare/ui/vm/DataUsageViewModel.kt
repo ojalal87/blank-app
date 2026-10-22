@@ -48,5 +48,9 @@ class DataUsageViewModel(private val g: AppGraph) : ViewModel() {
     /** Adds the app to the firewall for that network (the user turns the firewall on from its screen). */
     fun block(pkg: String, kind: NetKind) {
         g.firewall.set(pkg, kind, true)
+        // Takes effect at once when the firewall is already on.
+        if (com.bright.onepluscare.firewall.FirewallStore.status.value.running) {
+            runCatching { com.bright.onepluscare.firewall.FirewallVpnService.reload(g.appContext) }
+        }
     }
 }

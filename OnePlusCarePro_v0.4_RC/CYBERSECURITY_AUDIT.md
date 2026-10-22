@@ -239,7 +239,19 @@ Shizuku itself and the user's choice to grant it remain outside this app's contr
 | SEC-36 | Firewall service abused by other apps / hidden persistence | Service not exported and protected by `BIND_VPN_SERVICE` (system only); started only from the Firewall screen after system VPN consent; no boot receiver; persistence only through Android's user-controlled Always-on VPN. Blocked list in `care_firewall.xml`, excluded from backup. | `firewall VPN service is bindable only by the system` |
 | SEC-37 | Stalkerware victim safety | App detail warns that removal can alert the installer and suggests support organisations before removal. | — |
 
-## Areas reviewed with no finding
+## rc4 addendum — per-network firewall, data usage, DNS filter
+
+| ID | Risk | Control | Test |
+|---|---|---|---|
+| SEC-38 | Empty VPN allow-list routes every app into the blackhole (whole phone offline) | `FirewallPlanner` never yields an empty set; "nothing blocked here" becomes a self-only tunnel; the service also falls back to self if every listed app is uninstalled | `FirewallPlannerTest` |
+| SEC-39 | Self-only tunnel uses `allowBypass()`; could a blocked app bypass? | Bypass is enabled only on the self-only tunnel, which contains no blocked app; tunnels holding blocked apps never allow bypass | code review (`establish`) |
+| SEC-40 | Leak window on network switch | New tunnel is established before the old one is closed | code review |
+| SEC-41 | DNS filter parses untrusted packets | Strict IPv4/IPv6/UDP parser (no fragments, no extension headers), QNAME length/label/character limits, compression refused; replies built from scratch with checksums; bounded thread pool and queue | `DnsTest` |
+| SEC-42 | DNS filter becomes a query log / privacy leak | No logging or storage of queries; only counters and top-20 blocked hosts in memory; forwarding only to the network's own resolvers (no third-party fallback; SERVFAIL when none) | code review |
+| SEC-43 | Hostile hosts list | Download on tap only, HTTPS system CAs, no redirects, 12 MB cap, minimum 1000 entries, atomic replace; list can only cause blocking, never an action | `DnsTest` (`oversized list is refused`) |
+| SEC-44 | Usage statistics misread as malware detection | "Unusual" wording, minimum volume and history, robust baseline, explicit note that backups/sync look the same | `UsageTest` |
+
+
 
 * **Intents / deep links:** one exported activity (launcher), no `<data>` filters, no extras read.
 * **WebView:** none. If one is added: disable JavaScript and file access by default, no

@@ -31,4 +31,7 @@ S = [
 ("ab_copy", "Copy", "نسخ"),
 ("ab_alt_note", "Settings → Network & internet → Private DNS → Private DNS provider hostname. The provider (AdGuard) then sees which sites you look up.", "الإعدادات ← الشبكة والإنترنت ← DNS الخاص ← اسم مضيف مزوّد DNS الخاص. سيرى المزوّد (AdGuard) المواقع التي تبحث عنها."),
 ("ab_limits", "Limits: apps that use their own encrypted DNS (for example some browsers' secure DNS) or fixed addresses are not filtered, and ads served from the same host as the content cannot be blocked by DNS.", "الحدود: التطبيقات التي تستخدم DNS مشفّرًا خاصًا بها (مثل DNS الآمن في بعض المتصفحات) أو عناوين ثابتة لا تُصفّى، والإعلانات التي تأتي من نفس عنوان المحتوى لا يمكن حظرها عبر DNS."),
+("home_adblock", "Ad blocking", "حظر الإعلانات"),
+("home_fw_blocking", "%1$d apps blocked here", "%1$d تطبيقات محظورة هنا"),
+("home_ab_blocked", "%1$d blocked", "حُظر %1$d"),
 ]

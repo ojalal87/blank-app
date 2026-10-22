@@ -12,6 +12,8 @@ import androidx.compose.material.icons.outlined.BatteryStd
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Storage
+import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.TaskAlt
 import androidx.compose.material.icons.outlined.Wifi
 import androidx.compose.material.icons.outlined.PlayArrow
@@ -77,6 +79,8 @@ fun HomeScreen(nav: Navigator, padding: PaddingValues) {
     val vm: HomeViewModel = careViewModel()
     val s by vm.state.collectAsStateWithLifecycle()
     val graph = LocalAppGraph.current
+    val fw by com.bright.onepluscare.firewall.FirewallStore.status.collectAsStateWithLifecycle()
+    val ad by com.bright.onepluscare.firewall.AdBlockStore.status.collectAsStateWithLifecycle()
 
     ScreenScaffold(
         title = stringResource(R.string.app_name),
@@ -159,6 +163,27 @@ fun HomeScreen(nav: Navigator, padding: PaddingValues) {
                     icon = Icons.Outlined.Wifi,
                     onClick = { nav.go(Dest.NETWORK) },
                 )
+                // Protection at a glance: what is actually running right now, not a score.
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    MetricTile(
+                        label = stringResource(R.string.screen_firewall),
+                        value = stringResource(if (fw.running) R.string.on else R.string.off),
+                        supporting = if (fw.running && !fw.selfOnly) stringResource(R.string.home_fw_blocking, fw.blockingNow) else null,
+                        tone = if (fw.running) com.bright.onepluscare.ui.components.Tone.HEALTHY else null,
+                        icon = Icons.Outlined.Shield,
+                        modifier = Modifier.weight(1f),
+                        onClick = { nav.go(Dest.FIREWALL) },
+                    )
+                    MetricTile(
+                        label = stringResource(R.string.home_adblock),
+                        value = stringResource(if (ad.running) R.string.on else R.string.off),
+                        supporting = if (ad.running) stringResource(R.string.home_ab_blocked, ad.blocked) else null,
+                        tone = if (ad.running) com.bright.onepluscare.ui.components.Tone.HEALTHY else null,
+                        icon = Icons.Outlined.Block,
+                        modifier = Modifier.weight(1f),
+                        onClick = { nav.go(Dest.ADBLOCK) },
+                    )
+                }
             }
         }
 

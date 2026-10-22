@@ -15,9 +15,9 @@ Permission Center, and explained before the system prompt.
 | `READ_MEDIA_VISUAL_USER_SELECTED` (14+) | runtime | Offered by the system media prompt | Partial ("selected photos") access | — |
 | `WRITE_EXTERNAL_STORAGE` (≤10, `maxSdkVersion=29`) | runtime | Same prompt on Android 8–10 | Moving files into Safe Trash on old Android | Nothing is offered for removal |
 | `MANAGE_EXTERNAL_STORAGE` (11+) | special (Settings) | Permission Center → "All files access" | Downloads, installers, documents; Safe Trash moves | Media-only mode |
-| `PACKAGE_USAGE_STATS` | special (Settings) | App Doctor / Permission Center | Last use, screen time, per-package StorageStats | Metrics shown as "Not available" |
+| `PACKAGE_USAGE_STATS` | special (Settings) | App Doctor / Data usage / Permission Center | Last use, screen time, per-package StorageStats, per-app network bytes (NetworkStatsManager) | Metrics shown as "Not available" |
 | `QUERY_ALL_PACKAGES` | normal (Play-restricted) | — | Security scan must see apps that hide their icon (stalkerware) | — |
-| VPN consent | system dialog | Turning the Firewall on | Local VPN that drops traffic of the apps you chose | Firewall stays off |
+| VPN consent | system dialog | Turning the Firewall or Ad blocking on | Local VPN: drops traffic of apps you blocked on the current network, or filters DNS lookups | Feature stays off |
 | Shizuku permission | third-party | Advanced screen | Fixed read-only diagnostics | Advanced screen explains; nothing else changes |
 
 Removed in v0.4: `ACCESS_WIFI_STATE`. `QUERY_ALL_PACKAGES` was removed in rc1 and re-added in rc3 for the
@@ -42,7 +42,9 @@ security scan only (App Doctor still lists launchable apps).
 | Safe Trash files | `Android/data/<pkg>/files/safe_trash/` | The moved files themselves | **No** |
 | History | `files/history.json` | Event type, time, count, bytes. **No names or paths.** | **No** |
 | Downloaded stalkerware list | `files/stalkerware_ioc.yaml` | Public indicator list (only after you tap Update) | No |
-| Firewall list | `shared_prefs/care_firewall.xml` | Package names you chose to block | **No** |
+| Firewall lists | `shared_prefs/care_firewall.xml` | Package names blocked on Wi-Fi / on mobile | **No** |
+| Ad-block list | `files/adblock_hosts.txt` | Public hosts list (only after you tap Download) | **No** |
+| Ad-block exceptions | `shared_prefs/care_adblock.xml` | Host names you chose to always allow | **No** |
 | Migration flag | `shared_prefs/care_migrations.xml` | One boolean | No |
 
 Nothing is sent off the device. There are no accounts, analytics, crash reporters, ads or remote
@@ -54,6 +56,12 @@ when you tap *Update list* in Security scan, an HTTPS GET of the public stalkerw
 The security scan results (which apps are installed and what they can do) stay in memory and are never
 written to disk, history or the diagnostic export. The firewall drops packets of blocked apps without
 reading them; it keeps no logs.
+
+Ad blocking sees DNS lookups only (never app traffic). Each lookup is answered or forwarded to the current
+network's own DNS servers; nothing is written to disk. While it runs, counters and the 20 most-blocked host
+names are kept in memory and cleared when it stops. Downloading the hosts list (on tap) fetches
+`raw.githubusercontent.com/StevenBlack/hosts`. Data usage figures are read from Android on demand and
+never stored.
 
 ## Diagnostic export
 
