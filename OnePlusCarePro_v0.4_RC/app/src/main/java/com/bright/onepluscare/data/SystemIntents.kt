@@ -18,7 +18,7 @@ class SystemIntents(private val context: Context) {
     enum class Target {
         APP_ALL_FILES_ACCESS, USAGE_ACCESS, APP_NOTIFICATIONS, BATTERY_USAGE, BATTERY_OPTIMIZATION_LIST,
         BATTERY_SAVER, STORAGE, INTERNET_PANEL, WIFI, PRIVATE_DNS_NETWORK, PRIVACY, DEVELOPER, SECURITY,
-        DEVICE_INFO, SETTINGS, SHIZUKU_APP, APP_LANGUAGE, SHIZUKU_STORE,
+        DEVICE_INFO, SETTINGS, SHIZUKU_APP, APP_LANGUAGE, SHIZUKU_STORE, ACCESSIBILITY, NOTIFICATION_LISTENERS, VPN,
     }
 
     fun intentFor(target: Target, packageName: String = context.packageName): Intent? = when (target) {
@@ -41,6 +41,9 @@ class SystemIntents(private val context: Context) {
         Target.SETTINGS -> Intent(Settings.ACTION_SETTINGS)
         Target.SHIZUKU_APP -> context.packageManager.getLaunchIntentForPackage(SHIZUKU_PACKAGE)
         Target.SHIZUKU_STORE -> Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$SHIZUKU_PACKAGE"))
+        Target.ACCESSIBILITY -> Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+        Target.NOTIFICATION_LISTENERS -> Intent(Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS)
+        Target.VPN -> Intent(Settings.ACTION_VPN_SETTINGS)
         Target.APP_LANGUAGE ->
             if (Build.VERSION.SDK_INT >= 33) Intent(Settings.ACTION_APP_LOCALE_SETTINGS, Uri.parse("package:${context.packageName}")) else Intent(Settings.ACTION_LOCALE_SETTINGS)
     }?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

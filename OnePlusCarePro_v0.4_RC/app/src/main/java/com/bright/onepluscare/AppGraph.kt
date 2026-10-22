@@ -58,6 +58,8 @@ class AppGraph(context: Context) {
     val scheduler = MaintenanceScheduler(appContext)
     val diagnostics = DiagnosticsRepository(appContext, device, history)
     val tweaks = com.bright.onepluscare.data.TweaksRepository(appContext, shizuku, history)
+    val security = com.bright.onepluscare.data.SecurityRepository(appContext)
+    val firewall = com.bright.onepluscare.firewall.FirewallStore(appContext)
     val engine = RecommendationEngine()
 
     private val _results = MutableStateFlow(SharedResults())

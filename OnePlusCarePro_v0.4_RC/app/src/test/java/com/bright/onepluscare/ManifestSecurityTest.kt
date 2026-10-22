@@ -39,9 +39,18 @@ class ManifestSecurityTest {
     }
 
     @Test
-    fun `no QUERY_ALL_PACKAGES and no cleartext`() {
+    fun `firewall VPN service is bindable only by the system`() {
+        val svc = elements("service").single { it.getAttributeNS(ns, "name") == ".firewall.FirewallVpnService" }
+        assertEquals("false", svc.getAttributeNS(ns, "exported"))
+        assertEquals("android.permission.BIND_VPN_SERVICE", svc.getAttributeNS(ns, "permission"))
+        // No boot receiver: the firewall never starts itself.
         val perms = elements("uses-permission").map { it.getAttributeNS(ns, "name") }
-        assertFalse("android.permission.QUERY_ALL_PACKAGES" in perms)
+        assertFalse("android.permission.RECEIVE_BOOT_COMPLETED" in perms)
+        assertTrue(elements("receiver").isEmpty())
+    }
+
+    @Test
+    fun `no cleartext traffic`() {
         val app = elements("application").single()
         assertEquals("false", app.getAttributeNS(ns, "usesCleartextTraffic"))
         val nsc = File("src/main/res/xml/network_security_config.xml").readText()

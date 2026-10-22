@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AdminPanelSettings
 import androidx.compose.material.icons.outlined.BatteryChargingFull
+import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.History
@@ -25,6 +27,9 @@ import com.bright.onepluscare.ui.nav.Navigator
 @Composable
 fun ToolsScreen(nav: Navigator, padding: PaddingValues) {
     ScreenScaffold(title = stringResource(R.string.tab_tools), outerPadding = padding) {
+        item { SectionHeader(stringResource(R.string.tools_protection)) }
+        item { NavRow(Icons.Outlined.Shield, stringResource(R.string.screen_security), stringResource(R.string.sec_subtitle), { nav.go(Dest.SECURITY) }) }
+        item { NavRow(Icons.Outlined.Block, stringResource(R.string.screen_firewall), stringResource(R.string.fw_tools_subtitle), { nav.go(Dest.FIREWALL) }) }
         item { SectionHeader(stringResource(R.string.tools_system)) }
         item { NavRow(Icons.Outlined.Tune, stringResource(R.string.screen_tuner), stringResource(R.string.tuner_subtitle), { nav.go(Dest.TUNER) }) }
         item { SectionHeader(stringResource(R.string.tools_diagnostics)) }

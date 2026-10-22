@@ -30,9 +30,14 @@
         tools:ignore="ProtectedPermissions" />
 
     <!--
-        v0.3 requested QUERY_ALL_PACKAGES. v0.4 limits package visibility to launchable apps
-        (what App Doctor and Privacy Doctor review) plus the Shizuku manager.
+        Security scan (anti-stalkerware / app risk scanner). Stalkerware hides its launcher icon, so a
+        launcher-only <queries> cannot see it; this is the Play "antivirus / device security" use case.
+        The package list is processed on the device only and never stored or exported.
     -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+    <!-- App Doctor still lists launchable apps only; Shizuku manager detection. -->
     <queries>
         <intent>
             <action android:name="android.intent.action.MAIN" />
@@ -67,6 +72,19 @@
             android:exported="true"
             android:multiprocess="false"
             android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+        <!--
+            Firewall: local VPN that drops traffic of user-chosen apps only. Not exported; only the system
+            (which holds BIND_VPN_SERVICE) can bind it.
+        -->
+        <service
+            android:name=".firewall.FirewallVpnService"
+            android:exported="false"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
 
         <!-- The only exported activity. It has no deep links and ignores incoming intent extras. -->
         <activity

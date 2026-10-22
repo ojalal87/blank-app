@@ -10,13 +10,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bright.onepluscare.ui.vm.ScanViewModel
+import com.bright.onepluscare.ui.vm.SecurityViewModel
 import com.bright.onepluscare.ui.vm.SettingsViewModel
 import com.bright.onepluscare.ui.vm.TrashViewModel
 import com.bright.onepluscare.ui.vm.careViewModel
 
 /**
- * The single place where system dialogs are launched (MediaStore trash/restore confirmation and the
- * export file picker). Composed exactly once, so transitions between screens can never launch a dialog
+ * The single place where system dialogs are launched (MediaStore trash/restore confirmation, the
+ * export file picker and the VPN consent for the firewall). Composed exactly once, so transitions between screens can never launch a dialog
  * twice, and each pending request is marked as launched so rotation does not re-open it.
  */
 @Composable
@@ -50,6 +51,19 @@ fun ActivityResultHost() {
         if (!p.launched) {
             trashVm.restoreLaunched()
             restoreLauncher.launch(IntentSenderRequest.Builder(p.sender).build())
+        }
+    }
+
+    val securityVm: SecurityViewModel = careViewModel()
+    val security by securityVm.state.collectAsStateWithLifecycle()
+    val consentLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        securityVm.onConsentResult(result.resultCode == Activity.RESULT_OK)
+    }
+    LaunchedEffect(security.local.pendingConsent, security.local.consentLaunched) {
+        val consent = security.local.pendingConsent ?: return@LaunchedEffect
+        if (!security.local.consentLaunched) {
+            securityVm.consentLaunched()
+            consentLauncher.launch(consent)
         }
     }
 

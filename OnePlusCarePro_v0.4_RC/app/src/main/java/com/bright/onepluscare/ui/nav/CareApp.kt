@@ -57,6 +57,7 @@ import com.bright.onepluscare.ui.vm.careViewModel
 enum class Dest {
     HOME, SCAN, APPS, TOOLS, CLEANER, DUPLICATES, BATTERY, NETWORK, PRIVACY, REPAIR, TRASH, HISTORY, ADVANCED, SETTINGS, PERMISSIONS,
     TUNER, TUNER_FIXES, TUNER_DEBLOAT, TUNER_DISPLAY, TUNER_CHANGES, SHIZUKU_SETUP,
+    SECURITY, SECURITY_APP, FIREWALL,
 }
 
 private enum class Tab(val dest: Dest, val label: Int, val icon: ImageVector) {
@@ -165,5 +166,8 @@ private fun Screen(dest: Dest, nav: Navigator, padding: androidx.compose.foundat
         Dest.TUNER_DISPLAY -> com.bright.onepluscare.ui.screens.TunerDisplayScreen(nav, padding)
         Dest.TUNER_CHANGES -> com.bright.onepluscare.ui.screens.TunerChangesScreen(nav, padding)
         Dest.SHIZUKU_SETUP -> com.bright.onepluscare.ui.screens.ShizukuSetupScreen(nav, padding)
+        Dest.SECURITY -> com.bright.onepluscare.ui.screens.SecurityScreen(nav, padding)
+        Dest.SECURITY_APP -> com.bright.onepluscare.ui.screens.SecurityAppScreen(nav, padding)
+        Dest.FIREWALL -> com.bright.onepluscare.ui.screens.FirewallScreen(nav, padding)
     }
 }
