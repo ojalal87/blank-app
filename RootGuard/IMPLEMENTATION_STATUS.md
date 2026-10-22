@@ -75,7 +75,7 @@ minSdk 29 (Android 10), targetSdk/compileSdk 36.
 
 | Milestone | Scope | Status |
 |---|---|---|
-| M0 | Skeleton, pinned deps, core domain, Room control.db + equivalence tests, CI | Done — pending first green CI run of the Android build (see §5) |
+| M0 | Skeleton, pinned deps, core domain, Room control.db + equivalence tests, CI | Done — CI green (§7); v1 schema exported and committed, CI fails if it drifts |
 | M1 | Probe → principals → edit → preview → journaled apply → read-back verify → commit → reconcile → rollback/recover | Implemented and tested off-device against an iptables model; **device acceptance not yet run** (needs an owner-authorised rooted test device) |
 | M2 | Metadata sensor (verified sensors only), dedupe, counter-reset handling, telemetry.db, retention | Not started |
 | M3 | Multi-feature baselines, score-before-learn, quarantine, incidents (observe mode first) | Statistics primitives ported only |
@@ -120,4 +120,5 @@ behaviour above is against the in-memory model.
 
 | Commit | Run | Result |
 |---|---|---|
-| f8ce7ce | first RootGuard Android build | pending |
+| f8ce7ce | 39829… | cancelled (superseded by next push) |
+| 7b3144c | [39831640268](https://github.com/ojalal87/blank-app/actions/runs/39831640268) | **success**: handoff 16/16, core 39/39, assembleDebug, Robolectric app tests (schema equivalence, constraints, controller integration, manifest/AIDL, UI smoke), lint 0 errors, unsigned release. Debug APK artifact `rootguard-debug-apk` (16.9 MB zip). |

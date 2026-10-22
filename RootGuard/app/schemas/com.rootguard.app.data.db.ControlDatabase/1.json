@@ -1,0 +1,1065 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "f9f294ea1dc4b53248f47e93a6aa17e8",
+    "entities": [
+      {
+        "tableName": "app_installation",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`app_id` TEXT NOT NULL, `user_serial` INTEGER NOT NULL, `package_name` TEXT NOT NULL, `install_generation` TEXT NOT NULL, `signer_lineage_sha256` TEXT NOT NULL, `installed_ms` INTEGER NOT NULL, `removed_ms` INTEGER, PRIMARY KEY(`app_id`))",
+        "fields": [
+          {
+            "fieldPath": "appId",
+            "columnName": "app_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userSerial",
+            "columnName": "user_serial",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "packageName",
+            "columnName": "package_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "installGeneration",
+            "columnName": "install_generation",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "signerLineageSha256",
+            "columnName": "signer_lineage_sha256",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "installedMs",
+            "columnName": "installed_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "removedMs",
+            "columnName": "removed_ms",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "app_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_app_installation_user_serial_package_name_install_generation",
+            "unique": true,
+            "columnNames": [
+              "user_serial",
+              "package_name",
+              "install_generation"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_app_installation_user_serial_package_name_install_generation` ON `${TABLE_NAME}` (`user_serial`, `package_name`, `install_generation`)"
+          }
+        ]
+      },
+      {
+        "tableName": "app_version",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`app_id` TEXT NOT NULL, `version_code` INTEGER NOT NULL, `observed_ms` INTEGER NOT NULL, `signer_sha256` TEXT NOT NULL, `permissions_json` TEXT NOT NULL, PRIMARY KEY(`app_id`, `observed_ms`), FOREIGN KEY(`app_id`) REFERENCES `app_installation`(`app_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "appId",
+            "columnName": "app_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "versionCode",
+            "columnName": "version_code",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "observedMs",
+            "columnName": "observed_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "signerSha256",
+            "columnName": "signer_sha256",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "permissionsJson",
+            "columnName": "permissions_json",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "app_id",
+            "observed_ms"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "app_installation",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "app_id"
+            ],
+            "referencedColumns": [
+              "app_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "principal",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`principal_id` TEXT NOT NULL, `user_serial` INTEGER NOT NULL, `android_uid` INTEGER NOT NULL, `valid_from_ms` INTEGER NOT NULL, `valid_until_ms` INTEGER, `attribution` TEXT NOT NULL, PRIMARY KEY(`principal_id`))",
+        "fields": [
+          {
+            "fieldPath": "principalId",
+            "columnName": "principal_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userSerial",
+            "columnName": "user_serial",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "androidUid",
+            "columnName": "android_uid",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "validFromMs",
+            "columnName": "valid_from_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "validUntilMs",
+            "columnName": "valid_until_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "attribution",
+            "columnName": "attribution",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "principal_id"
+          ]
+        }
+      },
+      {
+        "tableName": "principal_member",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`principal_id` TEXT NOT NULL, `app_id` TEXT NOT NULL, `valid_from_ms` INTEGER NOT NULL, `valid_until_ms` INTEGER, PRIMARY KEY(`principal_id`, `app_id`, `valid_from_ms`), FOREIGN KEY(`principal_id`) REFERENCES `principal`(`principal_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`app_id`) REFERENCES `app_installation`(`app_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "principalId",
+            "columnName": "principal_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appId",
+            "columnName": "app_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "validFromMs",
+            "columnName": "valid_from_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "validUntilMs",
+            "columnName": "valid_until_ms",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "principal_id",
+            "app_id",
+            "valid_from_ms"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_principal_member_app_id",
+            "unique": false,
+            "columnNames": [
+              "app_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_principal_member_app_id` ON `${TABLE_NAME}` (`app_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "principal",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "principal_id"
+            ],
+            "referencedColumns": [
+              "principal_id"
+            ]
+          },
+          {
+            "table": "app_installation",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "app_id"
+            ],
+            "referencedColumns": [
+              "app_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`profile_id` TEXT NOT NULL, `name` TEXT NOT NULL, `mode` TEXT NOT NULL, `default_action` TEXT NOT NULL, `behavior_response` TEXT NOT NULL, `failure_mode` TEXT NOT NULL, `created_ms` INTEGER NOT NULL, PRIMARY KEY(`profile_id`))",
+        "fields": [
+          {
+            "fieldPath": "profileId",
+            "columnName": "profile_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mode",
+            "columnName": "mode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "defaultAction",
+            "columnName": "default_action",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "behaviorResponse",
+            "columnName": "behavior_response",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "failureMode",
+            "columnName": "failure_mode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdMs",
+            "columnName": "created_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "profile_id"
+          ]
+        }
+      },
+      {
+        "tableName": "policy_revision",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`revision_id` TEXT NOT NULL, `profile_id` TEXT NOT NULL, `parent_revision_id` TEXT, `created_ms` INTEGER NOT NULL, `policy_json` TEXT NOT NULL, `canonical_sha256` TEXT NOT NULL, `compiler_version` TEXT NOT NULL, PRIMARY KEY(`revision_id`), FOREIGN KEY(`profile_id`) REFERENCES `profile`(`profile_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`parent_revision_id`) REFERENCES `policy_revision`(`revision_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "revisionId",
+            "columnName": "revision_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileId",
+            "columnName": "profile_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parentRevisionId",
+            "columnName": "parent_revision_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "createdMs",
+            "columnName": "created_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "policyJson",
+            "columnName": "policy_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "canonicalSha256",
+            "columnName": "canonical_sha256",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "compilerVersion",
+            "columnName": "compiler_version",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "revision_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_policy_revision_profile_id",
+            "unique": false,
+            "columnNames": [
+              "profile_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_policy_revision_profile_id` ON `${TABLE_NAME}` (`profile_id`)"
+          },
+          {
+            "name": "index_policy_revision_parent_revision_id",
+            "unique": false,
+            "columnNames": [
+              "parent_revision_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_policy_revision_parent_revision_id` ON `${TABLE_NAME}` (`parent_revision_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "profile",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "profile_id"
+            ],
+            "referencedColumns": [
+              "profile_id"
+            ]
+          },
+          {
+            "table": "policy_revision",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "parent_revision_id"
+            ],
+            "referencedColumns": [
+              "revision_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "policy_rule",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`rule_id` TEXT NOT NULL, `revision_id` TEXT NOT NULL, `principal_id` TEXT, `action` TEXT NOT NULL, `layer` TEXT NOT NULL, `network` TEXT NOT NULL, `destination_type` TEXT NOT NULL, `destination_value` TEXT, `protocol` TEXT NOT NULL, `port_from` INTEGER, `port_to` INTEGER, `priority` INTEGER NOT NULL DEFAULT 0, `enabled` INTEGER NOT NULL, `schedule_json` TEXT, `expires_ms` INTEGER, PRIMARY KEY(`revision_id`, `rule_id`), FOREIGN KEY(`revision_id`) REFERENCES `policy_revision`(`revision_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`principal_id`) REFERENCES `principal`(`principal_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "ruleId",
+            "columnName": "rule_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "revisionId",
+            "columnName": "revision_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "principalId",
+            "columnName": "principal_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "action",
+            "columnName": "action",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "layer",
+            "columnName": "layer",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "network",
+            "columnName": "network",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "destinationType",
+            "columnName": "destination_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "destinationValue",
+            "columnName": "destination_value",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "protocol",
+            "columnName": "protocol",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "portFrom",
+            "columnName": "port_from",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "portTo",
+            "columnName": "port_to",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "priority",
+            "columnName": "priority",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "enabled",
+            "columnName": "enabled",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scheduleJson",
+            "columnName": "schedule_json",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "expiresMs",
+            "columnName": "expires_ms",
+            "affinity": "INTEGER"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "revision_id",
+            "rule_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "rules_by_principal",
+            "unique": false,
+            "columnNames": [
+              "principal_id",
+              "revision_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `rules_by_principal` ON `${TABLE_NAME}` (`principal_id`, `revision_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "policy_revision",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "revision_id"
+            ],
+            "referencedColumns": [
+              "revision_id"
+            ]
+          },
+          {
+            "table": "principal",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "principal_id"
+            ],
+            "referencedColumns": [
+              "principal_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "runtime_state",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`singleton` INTEGER NOT NULL, `desired_revision` TEXT, `applied_revision` TEXT, `verified_hash` TEXT, `health` TEXT NOT NULL, `updated_ms` INTEGER NOT NULL, PRIMARY KEY(`singleton`), FOREIGN KEY(`desired_revision`) REFERENCES `policy_revision`(`revision_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`applied_revision`) REFERENCES `policy_revision`(`revision_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "singleton",
+            "columnName": "singleton",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "desiredRevision",
+            "columnName": "desired_revision",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "appliedRevision",
+            "columnName": "applied_revision",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "verifiedHash",
+            "columnName": "verified_hash",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "health",
+            "columnName": "health",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedMs",
+            "columnName": "updated_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "singleton"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_runtime_state_desired_revision",
+            "unique": false,
+            "columnNames": [
+              "desired_revision"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_runtime_state_desired_revision` ON `${TABLE_NAME}` (`desired_revision`)"
+          },
+          {
+            "name": "index_runtime_state_applied_revision",
+            "unique": false,
+            "columnNames": [
+              "applied_revision"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_runtime_state_applied_revision` ON `${TABLE_NAME}` (`applied_revision`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "policy_revision",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "desired_revision"
+            ],
+            "referencedColumns": [
+              "revision_id"
+            ]
+          },
+          {
+            "table": "policy_revision",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "applied_revision"
+            ],
+            "referencedColumns": [
+              "revision_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "apply_transaction",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`transaction_id` TEXT NOT NULL, `from_revision` TEXT, `to_revision` TEXT NOT NULL, `phase` TEXT NOT NULL, `created_ms` INTEGER NOT NULL, `updated_ms` INTEGER NOT NULL, `helper_receipt_json` TEXT, `error_code` TEXT, PRIMARY KEY(`transaction_id`), FOREIGN KEY(`from_revision`) REFERENCES `policy_revision`(`revision_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`to_revision`) REFERENCES `policy_revision`(`revision_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "transactionId",
+            "columnName": "transaction_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "fromRevision",
+            "columnName": "from_revision",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "toRevision",
+            "columnName": "to_revision",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phase",
+            "columnName": "phase",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdMs",
+            "columnName": "created_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedMs",
+            "columnName": "updated_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "helperReceiptJson",
+            "columnName": "helper_receipt_json",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "errorCode",
+            "columnName": "error_code",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "transaction_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_apply_transaction_from_revision",
+            "unique": false,
+            "columnNames": [
+              "from_revision"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_apply_transaction_from_revision` ON `${TABLE_NAME}` (`from_revision`)"
+          },
+          {
+            "name": "index_apply_transaction_to_revision",
+            "unique": false,
+            "columnNames": [
+              "to_revision"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_apply_transaction_to_revision` ON `${TABLE_NAME}` (`to_revision`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "policy_revision",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "from_revision"
+            ],
+            "referencedColumns": [
+              "revision_id"
+            ]
+          },
+          {
+            "table": "policy_revision",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "to_revision"
+            ],
+            "referencedColumns": [
+              "revision_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "temporary_override",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`override_id` TEXT NOT NULL, `revision_id` TEXT NOT NULL, `rule_id` TEXT NOT NULL, `created_ms` INTEGER NOT NULL, `expires_ms` INTEGER NOT NULL, `boot_id` TEXT NOT NULL, `expires_elapsed_ms` INTEGER NOT NULL, `overrides_threat` INTEGER NOT NULL, PRIMARY KEY(`override_id`), FOREIGN KEY(`revision_id`) REFERENCES `policy_revision`(`revision_id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`revision_id`, `rule_id`) REFERENCES `policy_rule`(`revision_id`, `rule_id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
+        "fields": [
+          {
+            "fieldPath": "overrideId",
+            "columnName": "override_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "revisionId",
+            "columnName": "revision_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ruleId",
+            "columnName": "rule_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdMs",
+            "columnName": "created_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expiresMs",
+            "columnName": "expires_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bootId",
+            "columnName": "boot_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expiresElapsedMs",
+            "columnName": "expires_elapsed_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "overridesThreat",
+            "columnName": "overrides_threat",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "override_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_temporary_override_revision_id_rule_id",
+            "unique": false,
+            "columnNames": [
+              "revision_id",
+              "rule_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_temporary_override_revision_id_rule_id` ON `${TABLE_NAME}` (`revision_id`, `rule_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "policy_revision",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "revision_id"
+            ],
+            "referencedColumns": [
+              "revision_id"
+            ]
+          },
+          {
+            "table": "policy_rule",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "revision_id",
+              "rule_id"
+            ],
+            "referencedColumns": [
+              "revision_id",
+              "rule_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "capability_snapshot",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`snapshot_id` TEXT NOT NULL, `boot_id` TEXT NOT NULL, `recorded_ms` INTEGER NOT NULL, `probe_version` TEXT NOT NULL, `capabilities_json` TEXT NOT NULL, PRIMARY KEY(`snapshot_id`))",
+        "fields": [
+          {
+            "fieldPath": "snapshotId",
+            "columnName": "snapshot_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "bootId",
+            "columnName": "boot_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "recordedMs",
+            "columnName": "recorded_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "probeVersion",
+            "columnName": "probe_version",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "capabilitiesJson",
+            "columnName": "capabilities_json",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "snapshot_id"
+          ]
+        }
+      },
+      {
+        "tableName": "consent",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`consent_id` TEXT NOT NULL, `scope` TEXT NOT NULL, `scope_json` TEXT NOT NULL, `granted_ms` INTEGER NOT NULL, `revoked_ms` INTEGER, `policy_version` TEXT NOT NULL, PRIMARY KEY(`consent_id`))",
+        "fields": [
+          {
+            "fieldPath": "consentId",
+            "columnName": "consent_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scope",
+            "columnName": "scope",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scopeJson",
+            "columnName": "scope_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "grantedMs",
+            "columnName": "granted_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "revokedMs",
+            "columnName": "revoked_ms",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "policyVersion",
+            "columnName": "policy_version",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "consent_id"
+          ]
+        }
+      },
+      {
+        "tableName": "wizard_draft",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`draft_id` TEXT NOT NULL, `step` TEXT NOT NULL, `draft_json` TEXT NOT NULL, `updated_ms` INTEGER NOT NULL, PRIMARY KEY(`draft_id`))",
+        "fields": [
+          {
+            "fieldPath": "draftId",
+            "columnName": "draft_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "step",
+            "columnName": "step",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "draftJson",
+            "columnName": "draft_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedMs",
+            "columnName": "updated_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "draft_id"
+          ]
+        }
+      },
+      {
+        "tableName": "audit_event",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`audit_id` TEXT NOT NULL, `time_ms` INTEGER NOT NULL, `actor` TEXT NOT NULL, `event_type` TEXT NOT NULL, `subject_id` TEXT, `details_json` TEXT NOT NULL, PRIMARY KEY(`audit_id`))",
+        "fields": [
+          {
+            "fieldPath": "auditId",
+            "columnName": "audit_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timeMs",
+            "columnName": "time_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "actor",
+            "columnName": "actor",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "eventType",
+            "columnName": "event_type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subjectId",
+            "columnName": "subject_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "detailsJson",
+            "columnName": "details_json",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "audit_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "audit_by_time",
+            "unique": false,
+            "columnNames": [
+              "time_ms"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `audit_by_time` ON `${TABLE_NAME}` (`time_ms`)"
+          }
+        ]
+      },
+      {
+        "tableName": "outbox",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`job_id` TEXT NOT NULL, `kind` TEXT NOT NULL, `payload_json` TEXT NOT NULL, `state` TEXT NOT NULL, `attempts` INTEGER NOT NULL DEFAULT 0, `created_ms` INTEGER NOT NULL, `next_attempt_ms` INTEGER NOT NULL, PRIMARY KEY(`job_id`))",
+        "fields": [
+          {
+            "fieldPath": "jobId",
+            "columnName": "job_id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "kind",
+            "columnName": "kind",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payloadJson",
+            "columnName": "payload_json",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attempts",
+            "columnName": "attempts",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          },
+          {
+            "fieldPath": "createdMs",
+            "columnName": "created_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextAttemptMs",
+            "columnName": "next_attempt_ms",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "job_id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f9f294ea1dc4b53248f47e93a6aa17e8')"
+    ]
+  }
+}

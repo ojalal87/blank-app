@@ -45,11 +45,12 @@ jobs:
       - name: Assemble debug APK
         run: ./gradlew --no-configuration-cache :app:assembleDebug
 
-      - name: Exported Room schema
+      - name: Exported Room schema matches the committed one
         run: |
-          ls -R app/schemas || true
-          for f in $(find app/schemas -name '*.json'); do echo "=== $f"; cat "$f"; echo; done
-          git status --porcelain app/schemas
+          for f in $(find app/schemas -name '*.json'); do
+            git show "HEAD:RootGuard/$f" > /tmp/committed.json 2>/dev/null || { echo "::error::$f is not committed"; cat "$f"; exit 1; }
+            python3 -c 'import json,sys; a,b=(json.load(open(x)) for x in sys.argv[1:]); sys.exit(0 if a==b else 1)' /tmp/committed.json "$f" || { echo "::error::$f changed; commit the regenerated schema"; cat "$f"; exit 1; }
+          done
 
       - name: App unit tests (Robolectric)
         run: ./gradlew --no-configuration-cache :app:testDebugUnitTest
