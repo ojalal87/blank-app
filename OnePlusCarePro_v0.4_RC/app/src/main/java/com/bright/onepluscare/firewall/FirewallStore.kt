@@ -33,13 +33,15 @@ class FirewallStore(private val context: Context) {
     private val _policy = MutableStateFlow(read())
     val policy: StateFlow<FirewallPolicy> = _policy.asStateFlow()
 
-    private fun migrate() = synchronized(LOCK) {
-        val legacy = prefs.getStringSet(KEY_LEGACY, null) ?: return
-        prefs.edit()
+    private fun migrate() {
+        synchronized(LOCK) {
+            val legacy = prefs.getStringSet(KEY_LEGACY, null) ?: return
+            prefs.edit()
             .putStringSet(KEY_WIFI, (prefs.getStringSet(KEY_WIFI, emptySet()).orEmpty() + legacy))
             .putStringSet(KEY_MOBILE, (prefs.getStringSet(KEY_MOBILE, emptySet()).orEmpty() + legacy))
             .remove(KEY_LEGACY)
             .commit()
+        }
     }
 
     private fun read(): FirewallPolicy = FirewallPolicy(

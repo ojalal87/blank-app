@@ -40,9 +40,11 @@ class ManifestSecurityTest {
 
     @Test
     fun `firewall VPN service is bindable only by the system`() {
-        val svc = elements("service").single { it.getAttributeNS(ns, "name") == ".firewall.FirewallVpnService" }
-        assertEquals("false", svc.getAttributeNS(ns, "exported"))
-        assertEquals("android.permission.BIND_VPN_SERVICE", svc.getAttributeNS(ns, "permission"))
+        for (name in listOf(".firewall.FirewallVpnService", ".firewall.DnsFilterVpnService")) {
+            val svc = elements("service").single { it.getAttributeNS(ns, "name") == name }
+            assertEquals("false", svc.getAttributeNS(ns, "exported"))
+            assertEquals("android.permission.BIND_VPN_SERVICE", svc.getAttributeNS(ns, "permission"))
+        }
         // No boot receiver: the firewall never starts itself.
         val perms = elements("uses-permission").map { it.getAttributeNS(ns, "name") }
         assertFalse("android.permission.RECEIVE_BOOT_COMPLETED" in perms)

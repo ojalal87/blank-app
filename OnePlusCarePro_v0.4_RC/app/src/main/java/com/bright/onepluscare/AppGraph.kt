@@ -60,6 +60,8 @@ class AppGraph(context: Context) {
     val tweaks = com.bright.onepluscare.data.TweaksRepository(appContext, shizuku, history)
     val security = com.bright.onepluscare.data.SecurityRepository(appContext)
     val firewall = com.bright.onepluscare.firewall.FirewallStore(appContext)
+    val dataUsage = com.bright.onepluscare.data.DataUsageRepository(appContext)
+    val adBlock = com.bright.onepluscare.firewall.AdBlockStore(appContext)
     val engine = RecommendationEngine()
 
     private val _results = MutableStateFlow(SharedResults())

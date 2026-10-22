@@ -9,6 +9,11 @@ import com.bright.onepluscare.core.security.AppAssessment
 import com.bright.onepluscare.core.security.FirewallPolicy
 import com.bright.onepluscare.core.security.NetKind
 import com.bright.onepluscare.firewall.FirewallStatus
+import com.bright.onepluscare.firewall.AdBlockStatus
+import com.bright.onepluscare.firewall.AdBlockStore
+import com.bright.onepluscare.firewall.DnsFilterVpnService
+import com.bright.onepluscare.firewall.ListInfo
+import com.bright.onepluscare.firewall.ListUpdateResult
 import com.bright.onepluscare.core.security.ScanSummary
 import com.bright.onepluscare.data.IocInfo
 import com.bright.onepluscare.data.IocUpdateResult
@@ -37,14 +42,23 @@ data class SecurityLocal(
     val query: String = "",
     /** VPN consent intent waiting to be launched by [com.bright.onepluscare.ui.nav.ActivityResultHost]. */
     val pendingConsent: Intent? = null,
+    /** Which VPN the pending consent is for. */
+    val consentFor: VpnKind = VpnKind.FIREWALL,
+    val listUpdating: Boolean = false,
+    val privateDnsStrict: Boolean = false,
     val consentLaunched: Boolean = false,
     val message: String? = null,
 )
+
+enum class VpnKind { FIREWALL, ADBLOCK }
 
 data class SecurityUiState(
     val local: SecurityLocal = SecurityLocal(),
     val policy: FirewallPolicy = FirewallPolicy.EMPTY,
     val status: FirewallStatus = FirewallStatus(),
+    val ad: AdBlockStatus = AdBlockStatus(),
+    val listInfo: ListInfo? = null,
+    val exceptions: Set<String> = emptySet(),
 ) {
     val firewallOn: Boolean get() = status.running
     /** Apps with any block (Wi-Fi, mobile or both). */
@@ -64,8 +78,11 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
     private val local = MutableStateFlow(SecurityLocal())
     private var scanJob: Job? = null
 
-    val state: StateFlow<SecurityUiState> = combine(local, g.firewall.policy, FirewallStore.status) { l, p, st ->
-        SecurityUiState(l, p, st)
+    val state: StateFlow<SecurityUiState> = combine(
+        combine(local, g.firewall.policy, FirewallStore.status, ::Triple),
+        combine(AdBlockStore.status, g.adBlock.info, g.adBlock.exceptions, ::Triple),
+    ) { (l, p, st), (ad, info, ex) ->
+        SecurityUiState(l, p, st, ad, info, ex)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SecurityUiState())
 
     fun loadIocInfo() {
@@ -146,18 +163,83 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
             return
         }
         val consent = runCatching { FirewallVpnService.consentIntent(g.appContext) }.getOrNull()
-        if (consent != null) local.update { it.copy(pendingConsent = consent, consentLaunched = false) } else startFirewall()
+        if (consent != null) local.update { it.copy(pendingConsent = consent, consentLaunched = false, consentFor = VpnKind.FIREWALL) } else startFirewall()
     }
 
     fun consentLaunched() = local.update { it.copy(consentLaunched = true) }
 
     fun onConsentResult(granted: Boolean) {
         local.update { it.copy(pendingConsent = null, consentLaunched = false) }
-        if (granted) startFirewall() else local.update { it.copy(message = str(R.string.fw_consent_denied)) }
+        val kind = local.value.consentFor
+        if (granted) {
+            if (kind == VpnKind.FIREWALL) startFirewall() else startAdBlock()
+        } else {
+            local.update { it.copy(message = str(R.string.fw_consent_denied)) }
+        }
     }
 
     private fun startFirewall() {
+        // One VPN at a time: the ad blocker stops while the firewall runs.
+        if (AdBlockStore.status.value.running) runService { DnsFilterVpnService.stop(g.appContext) }
         runService { FirewallVpnService.start(g.appContext) }
+    }
+
+    // --- ad blocking ---
+
+    fun loadAdBlock() {
+        viewModelScope.launch {
+            g.adBlock.loadInfo()
+            val cm = g.appContext.getSystemService(android.net.ConnectivityManager::class.java)
+            val strict = runCatching { cm?.activeNetwork?.let { cm.getLinkProperties(it) }?.privateDnsServerName != null }.getOrDefault(false)
+            local.update { it.copy(privateDnsStrict = strict) }
+        }
+    }
+
+    fun setAdBlock(on: Boolean) {
+        if (!on) {
+            runService { DnsFilterVpnService.stop(g.appContext) }
+            return
+        }
+        if ((g.adBlock.info.value?.entries ?: 0) == 0) {
+            local.update { it.copy(message = str(R.string.ab_need_list)) }
+            return
+        }
+        val consent = runCatching { FirewallVpnService.consentIntent(g.appContext) }.getOrNull()
+        if (consent != null) local.update { it.copy(pendingConsent = consent, consentLaunched = false, consentFor = VpnKind.ADBLOCK) } else startAdBlock()
+    }
+
+    private fun startAdBlock() {
+        if (FirewallStore.status.value.running) runService { FirewallVpnService.stop(g.appContext) }
+        runService { DnsFilterVpnService.start(g.appContext) }
+    }
+
+    fun updateList() {
+        if (local.value.listUpdating) return
+        viewModelScope.launch {
+            local.update { it.copy(listUpdating = true) }
+            val r = g.adBlock.update()
+            local.update {
+                it.copy(
+                    listUpdating = false,
+                    message = when (r) {
+                        ListUpdateResult.UPDATED -> str(R.string.ab_list_updated, g.adBlock.info.value?.entries ?: 0)
+                        ListUpdateResult.NETWORK_ERROR -> str(R.string.sec_ioc_network_error)
+                        ListUpdateResult.INVALID -> str(R.string.ab_list_invalid)
+                    },
+                )
+            }
+            if (r == ListUpdateResult.UPDATED && AdBlockStore.status.value.running) runService { DnsFilterVpnService.reload(g.appContext) }
+        }
+    }
+
+    fun allowHost(host: String) {
+        g.adBlock.addException(host)
+        if (AdBlockStore.status.value.running) runService { DnsFilterVpnService.reload(g.appContext) }
+    }
+
+    fun removeException(host: String) {
+        g.adBlock.removeException(host)
+        if (AdBlockStore.status.value.running) runService { DnsFilterVpnService.reload(g.appContext) }
     }
 
     /** Block from a scan result: adds the app and, if the firewall is off, explains how to turn it on. */

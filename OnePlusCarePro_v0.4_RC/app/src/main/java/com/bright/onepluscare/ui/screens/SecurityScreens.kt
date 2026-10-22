@@ -204,6 +204,11 @@ fun SecurityScreen(nav: Navigator, padding: PaddingValues) {
             }
         }
         item {
+            NavRow(Icons.Outlined.Block, stringResource(R.string.screen_adblock),
+                if (s.ad.running) stringResource(R.string.ab_status_on, s.ad.blocked, s.ad.queries) else stringResource(R.string.ab_subtitle), { nav.go(Dest.ADBLOCK) },
+                trailing = if (s.ad.running) ({ StatusPill(Tone.HEALTHY, stringResource(R.string.on)) }) else null)
+        }
+        item {
             NavRow(Icons.Outlined.Shield, stringResource(R.string.sec_play_protect), stringResource(R.string.sec_play_protect_body), { vm.open(SystemIntents.Target.SECURITY) })
         }
         item { Text(stringResource(R.string.sec_limits), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
@@ -368,3 +373,83 @@ private fun FwSwitch(title: String, body: String?, checked: Boolean, onChange: (
         Switch(checked = checked, onCheckedChange = onChange)
     }
 }
+
+@Composable
+fun AdBlockScreen(nav: Navigator, padding: PaddingValues) {
+    val vm: SecurityViewModel = careViewModel()
+    val s by vm.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    LaunchedEffect(Unit) { vm.loadAdBlock() }
+    val clipboard = androidx.compose.ui.platform.LocalClipboardManager.current
+
+    ScreenScaffold(title = stringResource(R.string.screen_adblock), outerPadding = padding, onBack = nav.back, message = s.local.message, onMessageShown = vm::messageShown) {
+        item { NoticeCard(Tone.INFO, stringResource(R.string.ab_intro_title), stringResource(R.string.ab_intro_body)) }
+        if (s.local.privateDnsStrict) {
+            item { NoticeCard(Tone.ATTENTION, stringResource(R.string.ab_private_dns_title), stringResource(R.string.ab_private_dns_body)) }
+        }
+        item {
+            CareCard {
+                Column {
+                    FwSwitch(
+                        stringResource(R.string.ab_enable),
+                        if (s.ad.running) stringResource(R.string.ab_status_on, s.ad.blocked, s.ad.queries) else stringResource(R.string.ab_status_off),
+                        s.ad.running,
+                    ) { vm.setAdBlock(it) }
+                    if (s.firewallOn) Text(stringResource(R.string.ab_replaces_firewall), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    if (s.ad.noUpstream) Text(stringResource(R.string.ab_no_upstream), style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
+        item {
+            CareCard {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(stringResource(R.string.ab_list_title), style = MaterialTheme.typography.titleSmall)
+                    val info = s.listInfo
+                    InfoRow(stringResource(R.string.ab_list_entries), info?.entries?.takeIf { it > 0 }?.let { Fmt.number(it) } ?: stringResource(R.string.ab_list_none))
+                    info?.updatedAtMillis?.let { InfoRow(stringResource(R.string.sec_ioc_source), Fmt.date(context, it)) }
+                    Text(stringResource(R.string.ab_list_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    SecondaryAction(stringResource(if (s.local.listUpdating) R.string.sec_ioc_updating else R.string.ab_list_update), vm::updateList, enabled = !s.local.listUpdating, icon = Icons.Outlined.CloudDownload)
+                }
+            }
+        }
+        if (s.ad.topBlocked.isNotEmpty()) {
+            item { SectionHeader(stringResource(R.string.ab_top_blocked)) }
+            items(s.ad.topBlocked, key = { "b-" + it.first }) { (host, count) ->
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(host, style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        Text(stringResource(R.string.ab_times, count), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    TextButton(onClick = { vm.allowHost(host) }) { Text(stringResource(R.string.ab_allow)) }
+                }
+            }
+            item { Text(stringResource(R.string.ab_top_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+        }
+        if (s.exceptions.isNotEmpty()) {
+            item { SectionHeader(stringResource(R.string.ab_exceptions)) }
+            items(s.exceptions.toList(), key = { "e-$it" }) { host ->
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Text(host, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    TextButton(onClick = { vm.removeException(host) }) { Text(stringResource(R.string.ab_remove)) }
+                }
+            }
+        }
+        item { SectionHeader(stringResource(R.string.ab_alt_title)) }
+        item {
+            CareCard {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(stringResource(R.string.ab_alt_body), style = MaterialTheme.typography.bodyMedium)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(PRIVATE_DNS_ADBLOCK, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                        TextButton(onClick = { clipboard.setText(androidx.compose.ui.text.AnnotatedString(PRIVATE_DNS_ADBLOCK)) }) { Text(stringResource(R.string.ab_copy)) }
+                    }
+                    TextButton(onClick = { vm.open(SystemIntents.Target.PRIVATE_DNS_NETWORK) }) { Text(stringResource(R.string.action_open_settings)) }
+                    Text(stringResource(R.string.ab_alt_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+        }
+        item { Text(stringResource(R.string.ab_limits), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    }
+}
+
+private const val PRIVATE_DNS_ADBLOCK = "dns.adguard-dns.com"

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.BatteryChargingFull
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.DataUsage
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.NetworkCheck
@@ -30,10 +31,12 @@ fun ToolsScreen(nav: Navigator, padding: PaddingValues) {
         item { SectionHeader(stringResource(R.string.tools_protection)) }
         item { NavRow(Icons.Outlined.Shield, stringResource(R.string.screen_security), stringResource(R.string.sec_subtitle), { nav.go(Dest.SECURITY) }) }
         item { NavRow(Icons.Outlined.Block, stringResource(R.string.screen_firewall), stringResource(R.string.fw_tools_subtitle), { nav.go(Dest.FIREWALL) }) }
+        item { NavRow(Icons.Outlined.Block, stringResource(R.string.screen_adblock), stringResource(R.string.ab_subtitle), { nav.go(Dest.ADBLOCK) }) }
         item { SectionHeader(stringResource(R.string.tools_system)) }
         item { NavRow(Icons.Outlined.Tune, stringResource(R.string.screen_tuner), stringResource(R.string.tuner_subtitle), { nav.go(Dest.TUNER) }) }
         item { SectionHeader(stringResource(R.string.tools_diagnostics)) }
         item { NavRow(Icons.Outlined.BatteryChargingFull, stringResource(R.string.screen_battery), stringResource(R.string.battery_subtitle), { nav.go(Dest.BATTERY) }) }
+        item { NavRow(Icons.Outlined.DataUsage, stringResource(R.string.screen_data_usage), stringResource(R.string.du_subtitle), { nav.go(Dest.DATA_USAGE) }) }
         item { NavRow(Icons.Outlined.NetworkCheck, stringResource(R.string.screen_network), stringResource(R.string.network_subtitle), { nav.go(Dest.NETWORK) }) }
         item { NavRow(Icons.Outlined.PrivacyTip, stringResource(R.string.screen_privacy), stringResource(R.string.privacy_subtitle), { nav.go(Dest.PRIVACY) }) }
         item { SectionHeader(stringResource(R.string.tools_maintenance)) }

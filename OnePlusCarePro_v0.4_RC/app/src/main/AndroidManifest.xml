@@ -86,6 +86,19 @@
             </intent-filter>
         </service>
 
+        <!--
+            Ad/tracker blocking: local VPN whose only route is its own DNS address. Not exported; only the
+            system (BIND_VPN_SERVICE) can bind it. Never runs together with the firewall VPN.
+        -->
+        <service
+            android:name=".firewall.DnsFilterVpnService"
+            android:exported="false"
+            android:permission="android.permission.BIND_VPN_SERVICE">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
+
         <!-- The only exported activity. It has no deep links and ignores incoming intent extras. -->
         <activity
             android:name=".MainActivity"
