@@ -56,7 +56,13 @@ data class Request(
 data class FamilyHealth(val family: Int, val chainPresent: Boolean, val hookCount: Int, val hookFirst: Boolean, val ruleCount: Int, val hash: String, val unparsedCount: Int)
 
 @Serializable
-data class Health(val bootId: String, val families: List<FamilyHealth>, val foreignChains: List<String>) {
+data class Health(
+    val bootId: String,
+    val families: List<FamilyHealth>,
+    val foreignChains: List<String>,
+    /** Revision the helper's durable journal says is installed (used as expectedRevision for recovery re-applies). */
+    val journalRevision: String? = null,
+) {
     fun hashOf(family: Int): String? = families.firstOrNull { it.family == family }?.hash
     val anyOwned: Boolean get() = families.any { it.chainPresent || it.hookCount > 0 }
 }

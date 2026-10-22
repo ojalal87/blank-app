@@ -181,7 +181,7 @@ class HelperEngine(
 
     fun health(): Health {
         val rbs = listOf(4, 6).map(::readBack)
-        return Health(bootId, rbs.map { FamilyHealth(it.family, it.chainPresent, it.hookCount, it.hookFirst, it.rules.size, it.hash, it.unparsed.size) }, rbs.flatMap { it.foreignChains }.distinct())
+        return Health(bootId, rbs.map { FamilyHealth(it.family, it.chainPresent, it.hookCount, it.hookFirst, it.rules.size, it.hash, it.unparsed.size) }, rbs.flatMap { it.foreignChains }.distinct(), journal.read()?.revisionId)
     }
 
     /** Hash over the families that currently have an owned chain, the same way the compiler hashes a plan. */

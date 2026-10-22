@@ -1,0 +1,91 @@
+name: RootGuard
+
+on:
+  push:
+    paths:
+      - "RootGuard/**"
+      - ".github/workflows/rootguard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rootguard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: RootGuard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Handoff reference tests (schema fixtures + statistics reference)
+        run: python3 -I handoff/tests/test_handoff.py
+
+      - name: Generated strings are up to date
+        run: |
+          python3 -I tools/gen_strings.py .
+          git diff --exit-code -- app/src/main/res/values/strings.xml app/src/main/res/values-ar/strings.xml
+
+      - name: Core unit tests (JVM)
+        run: ./gradlew --no-configuration-cache :core:test
+
+      - name: Assemble debug APK
+        run: ./gradlew --no-configuration-cache :app:assembleDebug
+
+      - name: Exported Room schema
+        run: |
+          ls -R app/schemas || true
+          for f in $(find app/schemas -name '*.json'); do echo "=== $f"; cat "$f"; echo; done
+          git status --porcelain app/schemas
+
+      - name: App unit tests (Robolectric)
+        run: ./gradlew --no-configuration-cache :app:testDebugUnitTest
+
+      - name: Lint
+        run: ./gradlew --no-configuration-cache :app:lintDebug
+
+      - name: Assemble release (unsigned unless keystore.properties exists)
+        run: ./gradlew --no-configuration-cache :app:assembleRelease
+
+      - name: Summary
+        if: always()
+        run: |
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import glob, xml.etree.ElementTree as E
+          for name, pat in [("core", "core/build/test-results/test/*.xml"), ("app", "app/build/test-results/testDebugUnitTest/*.xml")]:
+              t = f = 0
+              for p in glob.glob(pat):
+                  r = E.parse(p).getroot(); t += int(r.get("tests")); f += int(r.get("failures")) + int(r.get("errors"))
+              print(f"- {name}: {t} tests, {f} failed")
+          PY
+          ls -la app/build/outputs/apk/*/ >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rootguard-debug-apk
+          path: RootGuard/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: ignore
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rootguard-reports
+          path: |
+            RootGuard/app/build/reports/
+            RootGuard/core/build/reports/
+            RootGuard/app/schemas/
+          if-no-files-found: ignore
