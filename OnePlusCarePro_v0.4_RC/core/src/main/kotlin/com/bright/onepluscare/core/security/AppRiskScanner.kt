@@ -127,3 +127,40 @@ object FirewallRules {
 
     fun canStart(blocked: Set<String>): Boolean = blocked.isNotEmpty()
 }
+
+/** The kind of underlying (non-VPN) network the phone is using right now. */
+enum class NetKind { WIFI, MOBILE, OTHER, NONE }
+
+/** Which apps lose internet on which network. A package may be in both sets. */
+data class FirewallPolicy(val blockWifi: Set<String>, val blockMobile: Set<String>) {
+    val isEmpty: Boolean get() = blockWifi.isEmpty() && blockMobile.isEmpty()
+    val allApps: Set<String> get() = blockWifi + blockMobile
+
+    companion object {
+        val EMPTY = FirewallPolicy(emptySet(), emptySet())
+    }
+}
+
+/**
+ * What the tunnel should contain on the current network. [selfOnly] means nothing is blocked here: the
+ * tunnel then holds only this app (with bypass allowed) so the VPN stays up for the next network switch
+ * without capturing anyone else. Never an empty allow-list: VpnService would route every app.
+ */
+data class TunnelPlan(val apps: Set<String>, val selfOnly: Boolean)
+
+object FirewallPlanner {
+    /**
+     * null = do not change the tunnel (no network right now, or nothing to firewall at all → caller stops).
+     * Ethernet/other transports block only apps blocked on both Wi-Fi and mobile (the user's "everywhere").
+     */
+    fun plan(policy: FirewallPolicy, current: NetKind, selfPackage: String): TunnelPlan? {
+        if (policy.isEmpty || current == NetKind.NONE) return null
+        val apps = when (current) {
+            NetKind.WIFI -> policy.blockWifi
+            NetKind.MOBILE -> policy.blockMobile
+            NetKind.OTHER -> policy.blockWifi intersect policy.blockMobile
+            NetKind.NONE -> emptySet()
+        } - selfPackage
+        return if (apps.isEmpty()) TunnelPlan(setOf(selfPackage), selfOnly = true) else TunnelPlan(apps, selfOnly = false)
+    }
+}

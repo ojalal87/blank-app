@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.bright.onepluscare.AppGraph
 import com.bright.onepluscare.R
 import com.bright.onepluscare.core.security.AppAssessment
-import com.bright.onepluscare.core.security.FirewallRules
+import com.bright.onepluscare.core.security.FirewallPolicy
+import com.bright.onepluscare.core.security.NetKind
+import com.bright.onepluscare.firewall.FirewallStatus
 import com.bright.onepluscare.core.security.ScanSummary
 import com.bright.onepluscare.data.IocInfo
 import com.bright.onepluscare.data.IocUpdateResult
@@ -39,7 +41,14 @@ data class SecurityLocal(
     val message: String? = null,
 )
 
-data class SecurityUiState(val local: SecurityLocal = SecurityLocal(), val blocked: Set<String> = emptySet(), val firewallOn: Boolean = false) {
+data class SecurityUiState(
+    val local: SecurityLocal = SecurityLocal(),
+    val policy: FirewallPolicy = FirewallPolicy.EMPTY,
+    val status: FirewallStatus = FirewallStatus(),
+) {
+    val firewallOn: Boolean get() = status.running
+    /** Apps with any block (Wi-Fi, mobile or both). */
+    val blocked: Set<String> get() = policy.allApps
     val selectedAssessment: AppAssessment? get() = local.summary?.assessments?.firstOrNull { it.facts.packageName == local.selected }
     val visibleNetApps: List<NetApp>
         get() {
@@ -55,8 +64,8 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
     private val local = MutableStateFlow(SecurityLocal())
     private var scanJob: Job? = null
 
-    val state: StateFlow<SecurityUiState> = combine(local, g.firewall.blocked, FirewallStore.running) { l, b, r ->
-        SecurityUiState(l, b, r)
+    val state: StateFlow<SecurityUiState> = combine(local, g.firewall.policy, FirewallStore.status) { l, p, st ->
+        SecurityUiState(l, p, st)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SecurityUiState())
 
     fun loadIocInfo() {
@@ -116,10 +125,14 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
     fun setQuery(q: String) = local.update { it.copy(query = q.take(64)) }
     fun setShowSystem(on: Boolean) = local.update { it.copy(showSystemApps = on) }
 
-    fun setBlocked(pkg: String, blocked: Boolean) {
-        g.firewall.set(pkg, blocked)
-        if (FirewallStore.running.value) {
-            if (FirewallRules.canStart(g.firewall.current())) runService { FirewallVpnService.reload(g.appContext) } else runService { FirewallVpnService.stop(g.appContext) }
+    fun setBlocked(pkg: String, kind: NetKind, blocked: Boolean) {
+        g.firewall.set(pkg, kind, blocked)
+        afterPolicyChange()
+    }
+
+    private fun afterPolicyChange() {
+        if (FirewallStore.status.value.running) {
+            if (!g.firewall.current().isEmpty) runService { FirewallVpnService.reload(g.appContext) } else runService { FirewallVpnService.stop(g.appContext) }
         }
     }
 
@@ -128,7 +141,7 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
             runService { FirewallVpnService.stop(g.appContext) }
             return
         }
-        if (!FirewallRules.canStart(g.firewall.current())) {
+        if (g.firewall.current().isEmpty) {
             local.update { it.copy(message = str(R.string.fw_need_apps)) }
             return
         }
@@ -149,8 +162,9 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
 
     /** Block from a scan result: adds the app and, if the firewall is off, explains how to turn it on. */
     fun blockFromScan(pkg: String) {
-        setBlocked(pkg, true)
-        local.update { it.copy(message = str(if (FirewallStore.running.value) R.string.fw_blocked_now else R.string.fw_blocked_turn_on)) }
+        g.firewall.setEverywhere(pkg, true)
+        afterPolicyChange()
+        local.update { it.copy(message = str(if (FirewallStore.status.value.running) R.string.fw_blocked_now else R.string.fw_blocked_turn_on)) }
     }
 
     fun messageShown() = local.update { it.copy(message = null) }

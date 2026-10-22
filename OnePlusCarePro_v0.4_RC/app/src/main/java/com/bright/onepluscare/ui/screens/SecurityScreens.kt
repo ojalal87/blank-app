@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.outlined.NotificationsActive
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Security
 import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -41,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bright.onepluscare.R
 import com.bright.onepluscare.core.security.AppAssessment
 import com.bright.onepluscare.core.security.FindingId
+import com.bright.onepluscare.core.security.NetKind
 import com.bright.onepluscare.core.security.ThreatLevel
 import com.bright.onepluscare.data.IocSource
 import com.bright.onepluscare.data.SystemIntents
@@ -178,7 +181,7 @@ fun SecurityScreen(nav: Navigator, padding: PaddingValues) {
         item { SectionHeader(stringResource(R.string.sec_protection)) }
         item {
             NavRow(Icons.Outlined.Block, stringResource(R.string.screen_firewall),
-                stringResource(if (s.firewallOn) R.string.fw_status_on else R.string.fw_subtitle, s.blocked.size), { nav.go(Dest.FIREWALL) },
+                fwStatusText(s), { nav.go(Dest.FIREWALL) },
                 trailing = if (s.firewallOn) ({ StatusPill(Tone.HEALTHY, stringResource(R.string.on)) }) else null)
         }
         item {
@@ -293,7 +296,7 @@ fun FirewallScreen(nav: Navigator, padding: PaddingValues) {
         item {
             CareCard {
                 Column {
-                    FwSwitch(stringResource(R.string.fw_enable), stringResource(if (s.firewallOn) R.string.fw_status_on else R.string.fw_status_off, s.blocked.size), s.firewallOn) { vm.setFirewall(it) }
+                    FwSwitch(stringResource(R.string.fw_enable), fwStatusText(s), s.firewallOn) { vm.setFirewall(it) }
                     Text(stringResource(R.string.fw_vpn_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     TextButton(onClick = { vm.open(SystemIntents.Target.VPN) }) { Text(stringResource(R.string.fw_always_on)) }
                 }
@@ -314,10 +317,44 @@ fun FirewallScreen(nav: Navigator, padding: PaddingValues) {
             val visible = s.visibleNetApps
             if (visible.isEmpty()) item { Text(stringResource(R.string.fw_no_apps), style = MaterialTheme.typography.bodyMedium) }
             items(visible, key = { "n-" + it.packageName }) { app ->
-                FwSwitch(app.label, app.packageName, app.packageName in s.blocked) { vm.setBlocked(app.packageName, it) }
+                FwAppRow(app.label, app.packageName, app.packageName in s.policy.blockWifi, app.packageName in s.policy.blockMobile) { kind, blocked -> vm.setBlocked(app.packageName, kind, blocked) }
             }
         }
         item { Text(stringResource(R.string.fw_limits), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    }
+}
+
+@Composable
+private fun fwStatusText(s: com.bright.onepluscare.ui.vm.SecurityUiState): String {
+    val st = s.status
+    if (!st.running) return stringResource(R.string.fw_status_off, s.blocked.size)
+    val net = stringResource(
+        when (st.network) {
+            NetKind.WIFI -> R.string.fw_net_wifi
+            NetKind.MOBILE -> R.string.fw_net_mobile
+            NetKind.OTHER -> R.string.fw_net_other
+            NetKind.NONE -> R.string.fw_net_none
+        },
+    )
+    return if (st.selfOnly) stringResource(R.string.fw_status_idle, net) else stringResource(R.string.fw_status_on_net, net, st.blockingNow)
+}
+
+@Composable
+private fun FwAppRow(label: String, pkg: String, wifiBlocked: Boolean, mobileBlocked: Boolean, onChange: (NetKind, Boolean) -> Unit) {
+    Column(Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+        Text(label, style = MaterialTheme.typography.titleSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Text(pkg, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(Triple(NetKind.WIFI, R.string.fw_net_wifi, wifiBlocked), Triple(NetKind.MOBILE, R.string.fw_net_mobile, mobileBlocked)).forEach { (kind, name, blocked) ->
+                val netName = stringResource(name)
+                FilterChip(
+                    selected = blocked,
+                    onClick = { onChange(kind, !blocked) },
+                    label = { Text(stringResource(if (blocked) R.string.fw_chip_blocked else R.string.fw_chip_allowed, netName)) },
+                    leadingIcon = if (blocked) ({ androidx.compose.material3.Icon(Icons.Outlined.Block, contentDescription = null) }) else null,
+                )
+            }
+        }
     }
 }
 

@@ -3,7 +3,10 @@ package com.bright.onepluscare.core
 import com.bright.onepluscare.core.security.AppRiskScanner
 import com.bright.onepluscare.core.security.AppSecurityFacts
 import com.bright.onepluscare.core.security.FindingId
+import com.bright.onepluscare.core.security.FirewallPlanner
+import com.bright.onepluscare.core.security.FirewallPolicy
 import com.bright.onepluscare.core.security.FirewallRules
+import com.bright.onepluscare.core.security.NetKind
 import com.bright.onepluscare.core.security.IocDatabase
 import com.bright.onepluscare.core.security.ThreatLevel
 import org.junit.jupiter.api.Test
@@ -149,5 +152,30 @@ class FirewallRulesTest {
     @Test
     fun `sanitize drops invalid names and this app`() {
         assertEquals(setOf("com.x.y"), FirewallRules.sanitize(listOf("com.x.y", "bad name", SELF, ""), SELF))
+    }
+}
+
+class FirewallPlannerTest {
+    private val p = FirewallPolicy(blockWifi = setOf("a.b.c", "both.x"), blockMobile = setOf("d.e.f", "both.x"))
+
+    @Test
+    fun `per network sets`() {
+        assertEquals(setOf("a.b.c", "both.x"), FirewallPlanner.plan(p, NetKind.WIFI, SELF)!!.apps)
+        assertEquals(setOf("d.e.f", "both.x"), FirewallPlanner.plan(p, NetKind.MOBILE, SELF)!!.apps)
+        assertEquals(setOf("both.x"), FirewallPlanner.plan(p, NetKind.OTHER, SELF)!!.apps)
+    }
+
+    @Test
+    fun `nothing to block here keeps a self-only tunnel, never an empty allow-list`() {
+        val plan = FirewallPlanner.plan(FirewallPolicy(setOf("a.b.c"), emptySet()), NetKind.MOBILE, SELF)!!
+        assertTrue(plan.selfOnly)
+        assertEquals(setOf(SELF), plan.apps)
+        assertTrue(FirewallPlanner.plan(FirewallPolicy(setOf(SELF), emptySet()), NetKind.WIFI, SELF)!!.selfOnly)
+    }
+
+    @Test
+    fun `no network or empty policy changes nothing`() {
+        assertNull(FirewallPlanner.plan(p, NetKind.NONE, SELF))
+        assertNull(FirewallPlanner.plan(FirewallPolicy.EMPTY, NetKind.WIFI, SELF))
     }
 }

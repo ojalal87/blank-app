@@ -61,7 +61,8 @@ class SecurityRepository(private val context: Context) {
     /** User-initiated only. HTTPS with system CAs (network_security_config), size-capped, validated before it replaces anything. */
     suspend fun updateIoc(): IocUpdateResult = withContext(Dispatchers.IO) {
         val text = try {
-            val conn = URL(IOC_URL).openConnection() as HttpsURLConnection
+            val net = com.bright.onepluscare.firewall.AppNetwork.forOwnTraffic(context)
+            val conn = (net?.openConnection(URL(IOC_URL)) ?: URL(IOC_URL).openConnection()) as HttpsURLConnection
             conn.connectTimeout = 15_000
             conn.readTimeout = 20_000
             conn.instanceFollowRedirects = false

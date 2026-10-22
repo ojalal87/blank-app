@@ -39,7 +39,8 @@ class NetworkRepository(private val context: Context) {
 
     suspend fun run(): NetworkResult = withContext(Dispatchers.IO) {
         val cm = context.getSystemService(ConnectivityManager::class.java)
-        val network = cm?.activeNetwork
+        // The firewall's self-only tunnel would otherwise be measured instead of the real network.
+        val network = com.bright.onepluscare.firewall.AppNetwork.forOwnTraffic(context)
         val caps = network?.let { cm.getNetworkCapabilities(it) }
         val props = network?.let { cm.getLinkProperties(it) }
         val connected = caps?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
