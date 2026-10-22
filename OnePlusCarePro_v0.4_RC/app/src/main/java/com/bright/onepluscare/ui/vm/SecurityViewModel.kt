@@ -190,7 +190,7 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
         viewModelScope.launch {
             g.adBlock.loadInfo()
             val cm = g.appContext.getSystemService(android.net.ConnectivityManager::class.java)
-            val strict = runCatching { cm?.activeNetwork?.let { cm.getLinkProperties(it) }?.privateDnsServerName != null }.getOrDefault(false)
+            val strict = android.os.Build.VERSION.SDK_INT >= 28 && runCatching { cm?.activeNetwork?.let { cm.getLinkProperties(it) }?.privateDnsServerName != null }.getOrDefault(false)
             local.update { it.copy(privateDnsStrict = strict) }
         }
     }

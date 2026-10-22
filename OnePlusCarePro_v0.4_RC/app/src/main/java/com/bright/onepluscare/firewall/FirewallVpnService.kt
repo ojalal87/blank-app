@@ -81,7 +81,7 @@ class FirewallVpnService : VpnService() {
         }
     }
 
-    private fun reconfigure(force: Boolean) = synchronized(this) {
+    private fun reconfigure(force: Boolean): Unit = synchronized(this) {
         val policy = FirewallStore(this).current()
         if (policy.isEmpty) {
             shutdown()

@@ -55,7 +55,7 @@ class AdBlockStore(private val context: Context) {
 
     suspend fun loadInfo() = withContext(Dispatchers.IO) { list() }
 
-    fun addException(host: String) = synchronized(this) {
+    fun addException(host: String): Unit = synchronized(this) {
         val h = host.lowercase().trimEnd('.').take(253)
         if (h.isEmpty()) return
         val next = (_exceptions.value + h).toSortedSet()
@@ -63,7 +63,7 @@ class AdBlockStore(private val context: Context) {
         _exceptions.value = next
     }
 
-    fun removeException(host: String) = synchronized(this) {
+    fun removeException(host: String): Unit = synchronized(this) {
         val next = (_exceptions.value - host).toSortedSet()
         prefs.edit().putStringSet(KEY_EXCEPTIONS, next).apply()
         _exceptions.value = next
