@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "mode": "BALANCED",
+  "default_action": "ALLOW",
+  "behavior_response": "NOTIFY",
+  "failure_mode": "PRESERVE_LAST_GOOD",
+  "learning": {
+    "target_days": 14,
+    "min_context_windows": 100,
+    "min_completeness": 0.9,
+    "score_before_learn": true,
+    "quarantine_anomalies": true
+  },
+  "retention": {
+    "raw_hours": 48,
+    "minute_days": 14,
+    "hourly_days": 90,
+    "features_days": 30,
+    "incidents_days": 90,
+    "audit_days": 180,
+    "telemetry_budget_mib": 300
+  },
+  "privacy": {
+    "cloud_analysis": false,
+    "upload_files": false,
+    "capture_payload": false,
+    "deep_file_scan": false
+  },
+  "feeds": {
+    "enabled_source_ids": [],
+    "license_review_required": true
+  },
+  "root": {
+    "disable_selinux": false,
+    "arbitrary_shell_api": false
+  },
+  "notes": "Initial configurable defaults; not tested production tuning."
+}

@@ -1,0 +1,148 @@
+{
+  "package": "RootGuard Claude Handoff",
+  "version": "1.0",
+  "date": "2026-10-22",
+  "status": "architecture-and-reference-not-android-build",
+  "database_table_counts": {
+    "control": 15,
+    "telemetry": 13,
+    "intel": 5
+  },
+  "files": [
+    {
+      "path": "CLAUDE_START_HERE.md",
+      "bytes": 4450,
+      "sha256": "fd3847bb9eb6f11bd5d15756401371ae78c9f08842e7cb611475093b6b1fc000"
+    },
+    {
+      "path": "README_AR.md",
+      "bytes": 3075,
+      "sha256": "9208687c7787e402322347ca0d76f7bfdd27fb177a77c3cf4aacf04a8438138a"
+    },
+    {
+      "path": "VALIDATION.md",
+      "bytes": 2798,
+      "sha256": "e09fa3b87a1e093b30f6fdf35afccc643cb45d01f149ac672d31335d2a4b72d8"
+    },
+    {
+      "path": "contracts/Domain.kt",
+      "bytes": 4135,
+      "sha256": "b44fb56bc6f2460f20689de11415aa13580222081b50af2062fd5f8b6633e3b7"
+    },
+    {
+      "path": "contracts/IPC.md",
+      "bytes": 1611,
+      "sha256": "770451dc557676c260d2605664465aefa9fe5515d8e09ab34b14721db83b73eb"
+    },
+    {
+      "path": "contracts/root_request.schema.json",
+      "bytes": 1197,
+      "sha256": "a9ded24744da0cda0975bf793ecfc1603e5babc0985e971aa2b7727d446b0f51"
+    },
+    {
+      "path": "database/README.md",
+      "bytes": 1336,
+      "sha256": "0a8609e93d5028b510b3022667725204b56be20815ba9a451f7249293a312c65"
+    },
+    {
+      "path": "database/control_v1.sql",
+      "bytes": 5756,
+      "sha256": "8f05dd9095abb79ccca119997187124ee1d0db37580c9782d7e42a58a05e6fc4"
+    },
+    {
+      "path": "database/control_v1.sqlite",
+      "bytes": 155648,
+      "sha256": "ac75ee49601f6b87065c23e3b4f35d417395aa38b6f9e69af3a7328b1044db31"
+    },
+    {
+      "path": "database/intel_v1.sql",
+      "bytes": 3033,
+      "sha256": "99e2ff60219eafa51f2066a7c446629420fc0d6d77281ac414b7be8cc0288fdf"
+    },
+    {
+      "path": "database/intel_v1.sqlite",
+      "bytes": 61440,
+      "sha256": "4c04c86c2ed4f720ff08a8c80eae25c19d1aae98a8e16c2ddd3568161c8f9ea9"
+    },
+    {
+      "path": "database/telemetry_v1.sql",
+      "bytes": 6403,
+      "sha256": "a33ffb6dfca96fd76c6b80ec0f1fe457f2d1113ca442ad1eee968bf3dddc40e1"
+    },
+    {
+      "path": "database/telemetry_v1.sqlite",
+      "bytes": 159744,
+      "sha256": "23a92d1cd89d10a431108b28881c1352713f34495544473beda0fee2ebcb7b26"
+    },
+    {
+      "path": "docs/01_ARCHITECTURE.md",
+      "bytes": 5149,
+      "sha256": "d884d1e8446abac6ad8a10f535ccbf0dc3655c7b0727bcafd6d4d0ae7fdfacf6"
+    },
+    {
+      "path": "docs/02_DATA_MODEL.md",
+      "bytes": 3959,
+      "sha256": "eb561bc173e4e4db74c7eafe97c9b457e9c9b920da4d580beb83ebf4020774e3"
+    },
+    {
+      "path": "docs/03_FIREWALL.md",
+      "bytes": 4670,
+      "sha256": "309db4bebde65db5538db5af8c721fc4d3ef4eb16b7dc33c71279e070e44f226"
+    },
+    {
+      "path": "docs/04_BEHAVIOR_ENGINE.md",
+      "bytes": 5761,
+      "sha256": "a96948d51a85a9ed497465e5fb7d54f8bc1abdf6d3bc7d9d356c7991ce9b0ae1"
+    },
+    {
+      "path": "docs/05_WIZARD_MODES.md",
+      "bytes": 3015,
+      "sha256": "9e047db2556a48b314d2080cd92e2ce2f601617bf05f280e13a77e29b07d003b"
+    },
+    {
+      "path": "docs/06_FEEDS_SECURITY.md",
+      "bytes": 3862,
+      "sha256": "0d530d585d7ae11363160c67b818542bacb9a5aba4eb72dba9a30a5c283b7f12"
+    },
+    {
+      "path": "docs/07_IMPLEMENTATION_ACCEPTANCE.md",
+      "bytes": 3654,
+      "sha256": "316028510f55b0fb6d81a65c3e0be09e19c1c370fdf7ea636fae9f228027e332"
+    },
+    {
+      "path": "docs/08_SOURCES_AND_DECISIONS.md",
+      "bytes": 1450,
+      "sha256": "8d585cf51b2366c5f99840cfeb84ce65824dbfae2099cf899908aecb9e9910d7"
+    },
+    {
+      "path": "docs/09_DATABASE_RELATIONSHIPS.md",
+      "bytes": 1173,
+      "sha256": "1b5445f16066d809ec18629a72848603a995c0887295b072e3a3d8c8465269a6"
+    },
+    {
+      "path": "docs/10_DATA_DICTIONARY.md",
+      "bytes": 12373,
+      "sha256": "2b3b87a22b7694b9af6d1f973249cf7a62beb48d48ec8541ba5d553304ead01a"
+    },
+    {
+      "path": "examples/config_balanced.json",
+      "bytes": 888,
+      "sha256": "3af637217630ecedd0b6963531f75bac02bb633e5562c52e2fbc10dd3f63c8b0"
+    },
+    {
+      "path": "examples/incident.json",
+      "bytes": 750,
+      "sha256": "33e7cf15dc912144c4087fa426b10f8a6198e9db300948b8827019f320db051e"
+    },
+    {
+      "path": "reference/behavior_reference.py",
+      "bytes": 2970,
+      "sha256": "12ad5efe5184cca75d8ddd9e562b06740bed2883a87f1ec4b36bccb92b1bd33b"
+    },
+    {
+      "path": "tests/test_handoff.py",
+      "bytes": 6485,
+      "sha256": "e6f1fd69933d7defd1aee665fe4c03c43d95712be541b8e1e792875546bbd364"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "synthetic": true,
+  "principal_id": "test-principal",
+  "summary_ar": "رفع بيانات غير معتاد أثناء خمول الجهاز",
+  "observed": {
+    "tx_bytes_5m": 188743680,
+    "new_destination_count": 3,
+    "foreground": false
+  },
+  "baseline": {
+    "usual_tx_range_bytes": [
+      1048576,
+      6291456
+    ],
+    "observations": 240,
+    "context": "wifi/night/background"
+  },
+  "anomaly_score": 88,
+  "risk_score": 52,
+  "data_confidence": 0.92,
+  "malware_probability": null,
+  "known_threat_match": false,
+  "interpretation": "Unusual does not establish maliciousness; could be cloud backup.",
+  "suggested_action": "REVIEW",
+  "allowed_actions": [
+    "DETAILS",
+    "TEMP_BLOCK",
+    "EXPECTED",
+    "UNSURE"
+  ]
+}

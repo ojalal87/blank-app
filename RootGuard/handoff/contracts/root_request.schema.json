@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PrivilegedRequestEnvelopeV1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol_version",
+    "request_id",
+    "operation",
+    "boot_id",
+    "expires_elapsed_ms",
+    "expected_revision",
+    "payload"
+  ],
+  "properties": {
+    "protocol_version": {
+      "const": 1
+    },
+    "request_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "operation": {
+      "enum": [
+        "PROBE",
+        "PREVIEW",
+        "APPLY",
+        "VERIFY",
+        "ROLLBACK",
+        "HEALTH",
+        "RECOVER_OWN_RULES",
+        "SUBSCRIBE_METADATA"
+      ]
+    },
+    "boot_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "expires_elapsed_ms": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "expected_revision": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 128
+    },
+    "payload": {
+      "type": "object",
+      "maxProperties": 16,
+      "description": "Envelope only. Operation-specific payloads must be validated against compiled typed DTOs; never execute arbitrary nested strings."
+    }
+  }
+}
