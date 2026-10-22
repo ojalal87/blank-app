@@ -1,0 +1,6 @@
+stalkerware_ioc.yaml is a snapshot of ioc.yaml from
+https://github.com/AssoEchap/stalkerware-indicators
+by Echap (https://echap.eu.org) and contributors, licensed under
+Creative Commons Attribution 4.0 International (CC BY 4.0):
+https://creativecommons.org/licenses/by/4.0/
+Snapshot taken 2026-10-22. Unmodified. Users can refresh it in-app from the same URL.
