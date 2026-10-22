@@ -10,6 +10,7 @@ import androidx.compose.material.icons.outlined.History
 import androidx.compose.material.icons.outlined.NetworkCheck
 import androidx.compose.material.icons.outlined.PrivacyTip
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -24,6 +25,8 @@ import com.bright.onepluscare.ui.nav.Navigator
 @Composable
 fun ToolsScreen(nav: Navigator, padding: PaddingValues) {
     ScreenScaffold(title = stringResource(R.string.tab_tools), outerPadding = padding) {
+        item { SectionHeader(stringResource(R.string.tools_system)) }
+        item { NavRow(Icons.Outlined.Tune, stringResource(R.string.screen_tuner), stringResource(R.string.tuner_subtitle), { nav.go(Dest.TUNER) }) }
         item { SectionHeader(stringResource(R.string.tools_diagnostics)) }
         item { NavRow(Icons.Outlined.BatteryChargingFull, stringResource(R.string.screen_battery), stringResource(R.string.battery_subtitle), { nav.go(Dest.BATTERY) }) }
         item { NavRow(Icons.Outlined.NetworkCheck, stringResource(R.string.screen_network), stringResource(R.string.network_subtitle), { nav.go(Dest.NETWORK) }) }

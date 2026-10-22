@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AdminPanelSettings
 import androidx.compose.material.icons.outlined.PlayArrow
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -44,6 +45,20 @@ fun AdvancedScreen(nav: Navigator, padding: PaddingValues) {
 
     ScreenScaffold(title = stringResource(R.string.screen_advanced), outerPadding = padding, onBack = nav.back) {
         item { NoticeCard(Tone.INFO, stringResource(R.string.adv_scope_title), stringResource(R.string.adv_scope_body)) }
+        item {
+            com.bright.onepluscare.ui.components.NavRow(
+                androidx.compose.material.icons.Icons.Outlined.Tune, stringResource(R.string.screen_tuner), stringResource(R.string.tuner_subtitle),
+                { nav.go(com.bright.onepluscare.ui.nav.Dest.TUNER) },
+            )
+        }
+        if (!st.running) {
+            item {
+                com.bright.onepluscare.ui.components.NavRow(
+                    androidx.compose.material.icons.Icons.Outlined.AdminPanelSettings, stringResource(R.string.screen_shizuku_setup), stringResource(R.string.shz_intro_short),
+                    { nav.go(com.bright.onepluscare.ui.nav.Dest.SHIZUKU_SETUP) },
+                )
+            }
+        }
         item {
             CareCard {
                 Column {

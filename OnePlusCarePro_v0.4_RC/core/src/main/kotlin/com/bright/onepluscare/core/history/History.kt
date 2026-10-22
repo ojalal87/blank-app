@@ -21,6 +21,9 @@ enum class HistoryType {
     @SerialName("network") NETWORK,
     @SerialName("export") EXPORT,
     @SerialName("recovery") RECOVERY,
+    @SerialName("tweak") TWEAK,
+    @SerialName("tweak_undo") TWEAK_UNDO,
+    @SerialName("debloat") DEBLOAT,
     @SerialName("other") OTHER,
 }
 

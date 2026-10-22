@@ -7,6 +7,9 @@ import com.bright.onepluscare.IAdvancedMaintenanceService
 import com.bright.onepluscare.core.advanced.AdvancedAllowList
 import com.bright.onepluscare.core.advanced.AdvancedDiagnostic
 import com.bright.onepluscare.core.advanced.OutputSanitizer
+import com.bright.onepluscare.core.tweaks.OpResult
+import com.bright.onepluscare.core.tweaks.TweakCommands
+import com.bright.onepluscare.core.tweaks.TweakOp
 import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
@@ -18,18 +21,24 @@ import kotlin.system.exitProcess
  *    captured at construction (fail closed if it could not be determined).
  *  - Executes only fixed argv from [AdvancedDiagnostic] / [AdvancedAllowList] via ProcessBuilder (no shell).
  *  - Output is line- and size-capped and stripped of serial/MAC patterns before crossing the Binder.
- *  - No file, package, settings or network mutation is possible through this interface.
+ *  - Mutations are possible only through [runOp]: typed TweakOps that are re-validated here by
+ *    TweakCommands.argvFor (allow-listed settings and values, app-ops, Doze whitelist, standby buckets,
+ *    package disable/uninstall-for-user of non-protected packages, bounded display density).
+ *    The app journals the previous state so every change can be undone.
  */
 class AdvancedMaintenanceService : IAdvancedMaintenanceService.Stub {
     private val allowedCallerUid: Int
+    private val selfPackage: String
 
     /** Used by Shizuku before v13. Without a Context the caller cannot be verified, so calls are refused. */
     constructor() : super() {
         allowedCallerUid = UNKNOWN_UID
+        selfPackage = ""
     }
 
     /** Shizuku v13+ passes the app's package Context. */
     constructor(context: Context) : super() {
+        selfPackage = context.packageName
         allowedCallerUid = try {
             context.packageManager.getApplicationInfo(context.packageName, 0).uid
         } catch (_: Exception) {
@@ -52,6 +61,13 @@ class AdvancedMaintenanceService : IAdvancedMaintenanceService.Stub {
         enforceCaller()
         val d = AdvancedDiagnostic.fromWireName(diagnosticId) ?: return REFUSED
         return execute(d.argv, d.timeoutMs, d.maxLines)
+    }
+
+    override fun runOp(opJson: String?): String {
+        enforceCaller()
+        val op = TweakOp.decode(opJson) ?: return OpResult.encode(OpResult.REFUSED)
+        val argv = TweakCommands.argvFor(op, selfPackage) ?: return OpResult.encode(OpResult.REFUSED)
+        return OpResult.encode(run(argv, OP_TIMEOUT_MS, if (op is TweakOp.PackagesList) MAX_LIST_LINES else MAX_OP_LINES))
     }
 
     override fun destroy() {
@@ -87,7 +103,29 @@ class AdvancedMaintenanceService : IAdvancedMaintenanceService.Stub {
         }
     }
 
+    /** Runs an allow-listed argv and returns the exit code with capped, unsanitized output (no free text crosses here). */
+    private fun run(argv: List<String>, timeoutMs: Long, maxLines: Int): OpResult = try {
+        val process = ProcessBuilder(argv).redirectErrorStream(true).start()
+        process.outputStream.close()
+        val lines = ArrayList<String>()
+        process.inputStream.bufferedReader().use { reader ->
+            while (lines.size < maxLines) {
+                val line = reader.readLine() ?: break
+                lines += line.take(300)
+            }
+        }
+        val finished = process.waitFor(timeoutMs, TimeUnit.MILLISECONDS)
+        if (!finished) process.destroyForcibly()
+        val exit = if (finished) process.exitValue() else -2
+        OpResult(ok = finished && exit == 0, exitCode = exit, output = lines.joinToString("\n"))
+    } catch (t: Throwable) {
+        OpResult(ok = false, exitCode = -3, output = t.javaClass.simpleName)
+    }
+
     companion object {
+        private const val OP_TIMEOUT_MS = 15_000L
+        private const val MAX_OP_LINES = 200
+        private const val MAX_LIST_LINES = 3_000
         const val REFUSED = "refused"
         const val NO_OUTPUT = "no output"
         private const val UNKNOWN_UID = -1

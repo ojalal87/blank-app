@@ -70,7 +70,7 @@ class ManifestSecurityTest {
     fun `AIDL exposes no command, path or argument-list method`() {
         val aidl = File("src/main/aidl/com/bright/onepluscare/IAdvancedMaintenanceService.aidl").readText()
         val methods = Regex("""\b(String|void)\s+(\w+)\s*\(""").findAll(aidl).map { it.groupValues[2] }.toSet()
-        assertEquals(setOf("identity", "readProperty", "runDiagnostic", "destroy"), methods)
+        assertEquals(setOf("identity", "readProperty", "runDiagnostic", "runOp", "destroy"), methods)
         assertFalse(aidl.contains("List<"))
         assertFalse(aidl.contains("String[]"))
     }
@@ -82,6 +82,8 @@ class ManifestSecurityTest {
         assertFalse(src.contains("\"-c\""))
         assertFalse(src.contains("Runtime.getRuntime().exec"))
         assertTrue(src.contains("enforceCaller()"))
+        // Every mutation is re-validated in the privileged process before execution.
+        assertTrue(src.contains("TweakCommands.argvFor(op, selfPackage) ?: return OpResult.encode(OpResult.REFUSED)"))
     }
 
     @Test

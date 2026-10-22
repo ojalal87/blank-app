@@ -245,6 +245,9 @@ object Labels {
         HistoryType.NETWORK -> R.string.ht_network
         HistoryType.EXPORT -> R.string.ht_export
         HistoryType.RECOVERY -> R.string.ht_recovery
+        HistoryType.TWEAK -> R.string.ht_tweak
+        HistoryType.TWEAK_UNDO -> R.string.ht_tweak_undo
+        HistoryType.DEBLOAT -> R.string.ht_debloat
         HistoryType.OTHER -> R.string.ht_other
     }
 

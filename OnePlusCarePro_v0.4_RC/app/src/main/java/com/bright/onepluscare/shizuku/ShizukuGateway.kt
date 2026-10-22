@@ -9,6 +9,8 @@ import com.bright.onepluscare.BuildConfig
 import com.bright.onepluscare.IAdvancedMaintenanceService
 import com.bright.onepluscare.core.advanced.AdvancedAllowList
 import com.bright.onepluscare.core.advanced.AdvancedDiagnostic
+import com.bright.onepluscare.core.tweaks.OpResult
+import com.bright.onepluscare.core.tweaks.TweakOp
 import com.bright.onepluscare.data.SystemIntents
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -156,6 +158,31 @@ class ShizukuGateway(private val context: Context) {
                 null
             }
         }
+    }
+
+    /** Bind if needed and wait briefly for the service. Returns false if Shizuku is unavailable or denied. */
+    suspend fun ensureConnected(): Boolean {
+        if (remote?.asBinder()?.isBinderAlive == true) return true
+        refresh()
+        if (!_status.value.permissionGranted || !bind()) return false
+        repeat(40) {
+            if (remote?.asBinder()?.isBinderAlive == true) return true
+            kotlinx.coroutines.delay(100)
+        }
+        return remote != null
+    }
+
+    /** Runs one typed op in the privileged service. The service re-validates it; refusals come back as REFUSED. */
+    suspend fun runOp(op: TweakOp): OpResult = withContext(Dispatchers.IO) {
+        if (!ensureConnected()) return@withContext OpResult(ok = false, exitCode = -10, output = "shizuku unavailable")
+        val service = remote ?: return@withContext OpResult(ok = false, exitCode = -10, output = "shizuku unavailable")
+        withTimeoutOrNull(25_000L) {
+            try {
+                OpResult.decode(service.runOp(TweakOp.encode(op)))
+            } catch (e: Exception) {
+                OpResult(ok = false, exitCode = -11, output = e.javaClass.simpleName)
+            }
+        } ?: OpResult(ok = false, exitCode = -12, output = "timeout")
     }
 
     companion object {

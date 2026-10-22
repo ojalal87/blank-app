@@ -54,7 +54,10 @@ import com.bright.onepluscare.ui.screens.TrashScreen
 import com.bright.onepluscare.ui.vm.SettingsViewModel
 import com.bright.onepluscare.ui.vm.careViewModel
 
-enum class Dest { HOME, SCAN, APPS, TOOLS, CLEANER, DUPLICATES, BATTERY, NETWORK, PRIVACY, REPAIR, TRASH, HISTORY, ADVANCED, SETTINGS, PERMISSIONS }
+enum class Dest {
+    HOME, SCAN, APPS, TOOLS, CLEANER, DUPLICATES, BATTERY, NETWORK, PRIVACY, REPAIR, TRASH, HISTORY, ADVANCED, SETTINGS, PERMISSIONS,
+    TUNER, TUNER_FIXES, TUNER_DEBLOAT, TUNER_DISPLAY, TUNER_CHANGES, SHIZUKU_SETUP,
+}
 
 private enum class Tab(val dest: Dest, val label: Int, val icon: ImageVector) {
     HOME(Dest.HOME, R.string.tab_home, Icons.Outlined.Home),
@@ -156,5 +159,11 @@ private fun Screen(dest: Dest, nav: Navigator, padding: androidx.compose.foundat
         Dest.ADVANCED -> AdvancedScreen(nav, padding)
         Dest.SETTINGS -> SettingsScreen(nav, padding)
         Dest.PERMISSIONS -> PermissionCenterScreen(nav, padding)
+        Dest.TUNER -> com.bright.onepluscare.ui.screens.TunerScreen(nav, padding)
+        Dest.TUNER_FIXES -> com.bright.onepluscare.ui.screens.TunerFixesScreen(nav, padding)
+        Dest.TUNER_DEBLOAT -> com.bright.onepluscare.ui.screens.DebloatScreen(nav, padding)
+        Dest.TUNER_DISPLAY -> com.bright.onepluscare.ui.screens.TunerDisplayScreen(nav, padding)
+        Dest.TUNER_CHANGES -> com.bright.onepluscare.ui.screens.TunerChangesScreen(nav, padding)
+        Dest.SHIZUKU_SETUP -> com.bright.onepluscare.ui.screens.ShizukuSetupScreen(nav, padding)
     }
 }

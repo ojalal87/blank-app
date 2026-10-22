@@ -19,7 +19,7 @@ enum class HistoryGroup(val types: Set<HistoryType>) {
     ALL(emptySet()),
     CLEANING(HistoryFilter.CLEANING),
     SCANS(HistoryFilter.SCANS),
-    OTHER(setOf(HistoryType.SCHEDULE, HistoryType.SESSION, HistoryType.NETWORK, HistoryType.EXPORT, HistoryType.RECOVERY, HistoryType.OTHER)),
+    OTHER(setOf(HistoryType.SCHEDULE, HistoryType.SESSION, HistoryType.NETWORK, HistoryType.EXPORT, HistoryType.RECOVERY, HistoryType.TWEAK, HistoryType.TWEAK_UNDO, HistoryType.DEBLOAT, HistoryType.OTHER)),
 }
 
 data class HistoryUiState(

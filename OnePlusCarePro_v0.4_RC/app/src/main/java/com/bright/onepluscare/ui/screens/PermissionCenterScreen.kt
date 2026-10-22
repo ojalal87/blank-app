@@ -40,6 +40,7 @@ class PermissionActions(
     val openAllFiles: () -> Unit,
     val openUsageAccess: () -> Unit,
     val requestNotifications: () -> Unit,
+    val openAppInfo: () -> Unit,
 )
 
 @Composable
@@ -52,6 +53,7 @@ fun rememberPermissionActions(): PermissionActions {
         requestMedia = { media.launch(graph.storage.mediaPermissions()) },
         openAllFiles = { vm.open(SystemIntents.Target.APP_ALL_FILES_ACCESS) },
         openUsageAccess = { vm.open(SystemIntents.Target.USAGE_ACCESS) },
+        openAppInfo = { graph.intents.openAppDetails(graph.appContext.packageName) },
         requestNotifications = {
             if (Build.VERSION.SDK_INT >= 33) notif.launch(Manifest.permission.POST_NOTIFICATIONS) else vm.open(SystemIntents.Target.APP_NOTIFICATIONS)
         },
@@ -103,6 +105,16 @@ fun LazyListScope.permissionItems(caps: Capabilities, actions: PermissionActions
             actionLabel = stringResource(R.string.action_open_settings),
             onAction = actions.openUsageAccess,
         )
+    }
+    if (caps.sdkInt >= 33 && (!caps.usageAccess || caps.storageMode != StorageAccessMode.FILESYSTEM)) {
+        item {
+            com.bright.onepluscare.ui.components.NoticeCard(
+                com.bright.onepluscare.ui.components.Tone.INFO,
+                stringResource(R.string.perm_restricted_title),
+                stringResource(R.string.perm_restricted_body),
+                action = { TextButton(onClick = actions.openAppInfo) { Text(stringResource(R.string.perm_restricted_action)) } },
+            )
+        }
     }
     item { SectionHeader(stringResource(R.string.perm_section_notifications)) }
     item {

@@ -57,6 +57,7 @@ class AppGraph(context: Context) {
     val shizuku = ShizukuGateway(appContext)
     val scheduler = MaintenanceScheduler(appContext)
     val diagnostics = DiagnosticsRepository(appContext, device, history)
+    val tweaks = com.bright.onepluscare.data.TweaksRepository(appContext, shizuku, history)
     val engine = RecommendationEngine()
 
     private val _results = MutableStateFlow(SharedResults())
