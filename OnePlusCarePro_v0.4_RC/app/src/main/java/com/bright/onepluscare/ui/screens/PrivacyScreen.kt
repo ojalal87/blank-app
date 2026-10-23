@@ -64,6 +64,7 @@ fun PrivacyScreen(nav: Navigator, padding: PaddingValues) {
             }
         }
         item { NavRow(Icons.Outlined.PrivacyTip, stringResource(R.string.screen_privacy_access), stringResource(R.string.pa_subtitle), { nav.go(Dest.PRIVACY_ACCESS) }) }
+        item { NavRow(Icons.Outlined.PrivacyTip, stringResource(R.string.screen_trackers), stringResource(R.string.tr_subtitle), { nav.go(Dest.TRACKERS) }) }
         item { NavRow(Icons.Outlined.Security, stringResource(R.string.privacy_open_privacy), stringResource(R.string.privacy_open_privacy_body), { vm.open(SystemIntents.Target.PRIVACY) }) }
 
         item { SectionHeader(stringResource(R.string.privacy_permissions)) }

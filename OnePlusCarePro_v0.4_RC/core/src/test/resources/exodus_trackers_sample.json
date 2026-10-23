@@ -1,0 +1,39 @@
+{
+ "trackers": {
+  "49": {
+   "id": 49,
+   "name": "Google Firebase Analytics",
+   "code_signature": "com.google.firebase.analytics.FirebaseAnalytics|com.google.android.gms.measurement.|com.google.firebase.firebase_analytics",
+   "network_signature": "firebase\\.com|firebaselogging-pa\\.googleapis\\.com",
+   "categories": [
+    "Analytics"
+   ]
+  },
+  "65": {
+   "id": 65,
+   "name": "Facebook Ads",
+   "code_signature": "com.facebook.ads",
+   "network_signature": "\\.facebook\\.com",
+   "categories": [
+    "Advertisement"
+   ]
+  },
+  "9999": {
+   "id": 9999,
+   "name": "No signature",
+   "code_signature": "",
+   "network_signature": "",
+   "categories": []
+  },
+  "9998": {
+   "id": 9998,
+   "name": "Teemo",
+   "code_signature": "com.databerries.|com.geolocstation.",
+   "network_signature": "",
+   "categories": [
+    "Advertisement",
+    "Location"
+   ]
+  }
+ }
+}

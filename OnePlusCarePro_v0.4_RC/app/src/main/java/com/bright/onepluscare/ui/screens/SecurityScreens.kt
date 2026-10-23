@@ -204,6 +204,7 @@ fun SecurityScreen(nav: Navigator, padding: PaddingValues) {
                     Text(stringResource(R.string.sec_ioc_title), style = MaterialTheme.typography.titleSmall)
                     if (ioc != null) {
                         InfoRow(stringResource(R.string.sec_ioc_families), Fmt.number(ioc.families))
+                        InfoRow(stringResource(R.string.sec_ioc_spyware), Fmt.number(ioc.spywareCollections))
                         InfoRow(stringResource(R.string.sec_ioc_indicators), Fmt.number(ioc.packages + ioc.certificates))
                         InfoRow(
                             stringResource(R.string.sec_ioc_source),
@@ -410,6 +411,12 @@ fun AdBlockScreen(nav: Navigator, padding: PaddingValues) {
                     ) { vm.setAdBlock(it) }
                     if (s.firewallOn) Text(stringResource(R.string.ab_replaces_firewall), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (s.ad.noUpstream) Text(stringResource(R.string.ab_no_upstream), style = MaterialTheme.typography.bodySmall)
+                    if (!s.policy.isEmpty) {
+                        Text(
+                            stringResource(if (s.ad.attributionWorks == false) R.string.ab_fw_partial_unavailable else R.string.ab_fw_partial, s.ad.firewallRefused),
+                            style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
             }
         }
@@ -422,6 +429,18 @@ fun AdBlockScreen(nav: Navigator, padding: PaddingValues) {
                     info?.updatedAtMillis?.let { InfoRow(stringResource(R.string.sec_ioc_source), Fmt.date(context, it)) }
                     Text(stringResource(R.string.ab_list_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     SecondaryAction(stringResource(if (s.local.listUpdating) R.string.sec_ioc_updating else R.string.ab_list_update), vm::updateList, enabled = !s.local.listUpdating, icon = Icons.Outlined.CloudDownload)
+                }
+            }
+        }
+        item {
+            CareCard {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(stringResource(R.string.ab_spyware_title), style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(R.string.ab_spyware_body, s.local.ioc?.spywareDomains ?: 0), style = MaterialTheme.typography.bodySmall)
+                    if (s.ad.running && s.ad.spywareHits.isEmpty()) Text(stringResource(R.string.ab_spyware_none), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    s.ad.spywareHits.forEach { h ->
+                        NoticeCard(Tone.CRITICAL, h.domain, stringResource(R.string.ab_spyware_hit, h.app ?: stringResource(R.string.ab_an_app), h.collection))
+                    }
                 }
             }
         }
@@ -484,6 +503,7 @@ private fun com.bright.onepluscare.core.security.ScanVerdict.label() = when (thi
 private fun com.bright.onepluscare.core.security.HashSource.label() = when (this) {
     com.bright.onepluscare.core.security.HashSource.ECHAP_STALKERWARE -> R.string.mw_src_echap
     com.bright.onepluscare.core.security.HashSource.MALWAREBAZAAR -> R.string.mw_src_bazaar
+    com.bright.onepluscare.core.security.HashSource.MVT -> R.string.mw_src_mvt
 }
 
 @Composable
@@ -586,6 +606,7 @@ fun MalwareScanScreen(nav: Navigator, padding: PaddingValues) {
                     s.info?.let { i ->
                         InfoRow(stringResource(R.string.mw_src_echap), Fmt.number(i.echap))
                         InfoRow(stringResource(R.string.mw_src_bazaar), Fmt.number(i.bazaar))
+                        InfoRow(stringResource(R.string.mw_src_mvt), Fmt.number(i.mvt))
                         InfoRow(stringResource(R.string.sec_ioc_source), i.updatedAtMillis?.let { Fmt.date(context, it) } ?: stringResource(R.string.sec_ioc_bundled))
                     }
                     Text(stringResource(R.string.mw_db_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)

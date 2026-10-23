@@ -1,0 +1,428 @@
+1	Teemo	Analytics	com.databerries.|com.geolocstation.
+2	FidZup	Analytics	com.fidzup.
+3	Audience Studio (Krux)	Analytics,Profiling	com.krux.androidsdk
+4	Ad4Screen	Advertisement	com.ad4screen.sdk
+6	Weborama	Analytics	com.weborama.
+7	Smart		com.smartadserver.
+8	JW Player		com.longtailvideo.jwplayer.
+9	Loggly	Analytics	com.github.tony19.timber.loggly|com.github.tony19.loggly|com.visiware.sync2ad.logger.loggly.
+11	OutBrain		com.outbrain.
+12	AppsFlyer	Analytics	com.appsflyer.
+13	Ligatus		.LigatusManager|.LigatusViewClient|com.ligatus.android.adframework
+14	Widespace		com.widespace.
+15	AppNexus		com.appnexus.opensdk.
+16	Localytics	Analytics,Profiling	com.localytics.android.|com.localytics.androidx|com.localytics.react.
+17	Braze (formerly Appboy)	Analytics,Advertisement,Location	com.appboy
+18	mParticle	Analytics	com.mparticle
+20	S4M	Analytics	com.sam4mobile.|.S4MAnalytic
+22	Sizmek	Analytics	.sizmek.
+23	Batch	Analytics,Profiling	com.batch.android.
+24	Sync2Ad	Analytics	com.visiware.sync2ad.dmp.
+25	Flurry	Advertisement,Analytics	com.flurry.
+26	HockeyApp	Crash reporting	net.hockeyapp.
+27	Google CrashLytics	Crash reporting	io.fabric.|com.crashlytics.|com.google.firebase.crashlytics|com.google.firebase.crash.|io.invertase.firebase.crashlytics.
+28	LeanPlum	Analytics,Profiling,Location	com.leanplum.
+29	Tinder Analytics	Analytics	com.tinder.analytics|com.tinder.ads
+30	Schibsted		.schibsted.
+31	ATInternet	Analytics	com.atinternet.
+32	Tealium	Analytics	.tealium.
+33	Nexage		com.nexage.android.|org.nexage.
+34	Ogury Presage		io.presage.
+35	Twitter MoPub	Analytics,Advertisement	com.mopub.
+36	Add Apt Tr		com.intentsoftware.addapptr.
+37	Vectaury	Analytics,Profiling,Location	io.vectaury.
+38	Tune	Analytics	com.tune|com.mobileapptracker
+39	Pushwoosh		com.pushwoosh
+40	Demdex	Analytics	com.adobe.mobile.Analytics|com.adobe.mobile.Config.
+41	AdsWizz		.adswizz.
+42	ExactTarget	Analytics	com.exacttarget.
+43	Omniture	Analytics,Profiling	com.omniture.|com.adobe.adms.measurement.
+44	OpenLocate	Location	com.safegraph.|com.openlocate
+45	TagCommander (Commanders Act.)	Analytics	com.tagcommander.
+47	Facebook Audience	Analytics	com.facebook.audiencenetwork
+48	Google Analytics	Analytics	com.google.android.apps.analytics.|com.google.android.gms.analytics.|com.google.analytics.
+49	Google Firebase Analytics	Analytics	com.google.firebase.analytics.FirebaseAnalytics|com.google.android.gms.measurement.|com.google.firebase.firebase_analytics
+51	Eulerian	Analytics	com.eulerian.android.sdk
+52	Adjust	Analytics	com.adjust.sdk.|com.adjust.android.sdk.
+53	ChartBoost		com.chartboost.sdk.
+54	Backelite	Analytics	com.backelite.android.|com.backelite.bkdroid.
+55	Areametrics	Analytics	com.areametrics.areametricssdk|com.areametrics.nosdkandroid
+56	ComScore	Analytics,Advertisement	com.comscore.
+57	Cuebiq	Analytics,Location	com.cuebiq.cuebiqsdk.model.Collector|com.cuebiq.cuebiqsdk.receiver.CoverageReceiver
+58	HelpShift		com.helpshift
+59	Kontakt	Analytics	com.kontakt.sdk.android.
+60	Locuslabs		com.locuslabs.sdk
+61	Moat	Analytics,Advertisement	com.moat.analytics.mobile.
+62	Segment	Analytics,Profiling	com.segment.analytics.
+63	Mobile Engagement	Analytics	com.ubikod.capptain.|com.microsoft.azure.engagement.
+64	Colocator	Analytics	net.crowdconnected.androidcolocator
+65	Facebook Ads	Advertisement	com.facebook.ads
+66	Facebook Analytics	Analytics	com.facebook.appevents|com.facebook.marketing.|com.facebook.CampaignTrackingReceiver
+67	Facebook Login	Identification	com.facebook.login
+68	Facebook Notifications		com.facebook.notifications
+69	Facebook Places		com.facebook.places
+70	Facebook Share		com.facebook.share
+72	AppLovin (MAX and SparkLabs)	Analytics,Profiling,Identification,Advertisement	com.applovin
+73	Glispa Connect (Formerly Avocarrot)		com.avocarrot.sdk
+74	NativeX		com.nativex
+75	Baidu Maps		com.baidu.BaiduMap
+76	WeChat Location		com.tencent.map.geolocation|com.tencent.mm.plugin.location.|com.tencent.mm.plugin.location_soso.|com.tencent.mm.plugin.location_google
+77	HyperTrack	Location	com.hypertrack|com.hypertracklive.|io.hypertrack
+78	Uber Analytics	Analytics	com.ubercab.analytics.|com.ubercab.library.metrics.analytics.|com.ubercab.client.core.analytics.
+79	Lisnr	Analytics	com.lisnr.
+80	SilverPush	Analytics	com.silverpush.
+81	Shopkick	Analytics	com.shopkick.sdk.api.|com.shopkick.fetchers.
+82	Alphonso	Analytics	tv.alphonso.service
+83	Smaato		com.smaato.
+84	Scandit	Analytics	com.scandit.
+85	Inrix		com.inrix.sdk
+86	Signal360	Analytics	com.signal360.sdk.core.|com.sonicnotify.sdk.core.|com.rnsignal360
+87	TeleQuid		com.telequid.
+88	Retency	Analytics	com.retency.sdk.android
+89	MAdvertise		com.mngads.sdk|com.mngads.views|com.mngads.
+90	AdColony	Advertisement	com.adcolony.|com.jirbo.adcolony.
+91	AccountKit	Identification	com.facebook.accountkit
+92	Amazon Advertisement		com.amazon.device.ads
+93	Amazon Mobile Associates		com.amazon.device.associates
+94	Radius Networks	Analytics	com.radiusnetworks
+95	Amazon Analytics (Amazon insights)	Analytics	com.amazon.insights|com.amazonaws.mobileconnectors.pinpoint.analytics.|com.amazonaws.mobileconnectors.amazonmobileanalytics
+96	Baidu APPX		com.baidu.appx
+97	Baidu Location		com.baidu.location
+99	Baidu Map		com.baidu.mapapi
+100	Baidu Mobile Ads		com.baidu.mobads
+101	Baidu Mobile Stat	Analytics	com.baidu.mobstat
+102	Estimote	Analytics,Location	com.estimote.
+103	Baidu Navigation		com.baidu.navi
+104	Fyber	Advertisement	com.fyber.
+105	Google Tag Manager	Analytics	com.google.tagmanager|com.google.android.gms.tagmanager
+106	Inmobi		com.inmobi|in.inmobi.
+107	Millennial Media		com.millennialmedia.
+108	Snowplow	Analytics	com.snowplowanalytics.
+109	Fyber SponsorPay		com.sponsorpay
+110	Supersonic Ads		com.supersonic.adapters.supersonicads|com.supersonicads.sdk
+111	Carnival	Analytics	com.carnival.sdk|com.carnivalmobile
+112	Tencent Map LBS		com.tencent.lbs
+113	Tencent MobWin		com.tencent.mobwin
+114	Tencent MTA	Analytics	com.tencent.mta
+115	Apptentive	Analytics	com.apptentive.
+116	Tencent Stats	Analytics	com.tencent.stat|com.tencent.wxop.stat
+117	Tencent Weiyun		com.tencent.weiyun
+118	MixPanel	Analytics	com.mixpanel.
+119	Umeng Analytics		com.umeng.analytics
+120	Umeng Feedback		com.umeng.fb
+121	Unity3d Ads	Advertisement	com.unity3d.services|com.unity3d.ads
+122	Countly	Analytics,Profiling	ly.count.android.
+123	Urbanairship		com.urbanairship
+124	Yandex Ad	Advertisement	com.yandex.mobile.ads
+125	Amplitude	Analytics,Profiling	com.amplitude.
+126	AppSee	Analytics,Profiling,Identification	com.appsee.
+127	Kochava	Analytics,Profiling,Advertisement	com.kochava.base.|com.kochava.android.tracker.|.kochavaccpa.
+129	Webtrends	Analytics	com.webtrends.mobile.analytics.|com.webtrends.mobile.android
+130	New Relic	Analytics	com.newrelic.agent.|com.newrelic.mobile.
+131	AppAnalytics	Analytics	io.appanalytics.sdk
+132	Applause	Crash reporting,Analytics	com.applause.android.
+133	Quantcast	Analytics,Profiling	com.quantcast.measurement.service.
+135	Apptimize	Analytics	com.apptimize.
+136	AppBrain		com.appbrain.
+137	Dynatrace	Analytics	com.dynatrace.android.app|com.dynatrace.agent|com.dynatrace.tools
+138	Matomo (Piwik)	Analytics	org.piwik|org.piwik.mobile|org.matomo
+140	AppMetrica		com.yandex.metrica.
+142	Singlespot	Analytics	com.sptproximitykit.
+143	Sensoro		com.sensoro.beacon.kit.|com.sensoro.cloud
+144	Sense360	Analytics,Location	com.sense360.android.
+145	Rubicon Project	Analytics	com.rfm.sdk
+146	ironSource	Analytics	com.ironsource.
+147	Heyzap (bought by Fyber)		com.heyzap.sdk.ads.|com.heyzap.mediation.
+148	SAP CDC (Gigya)	Analytics	com.gigya.
+149	Foresee	Analytics	com.foresee.sdk.ForeSee
+150	Fiksu		com.fiksu.asotracking
+151	Ensighten	Analytics	com.ensighten.
+152	Dynamic Yield	Analytics	com.dynamicyield.
+153	BlueKai (acquired by Oracle)	Analytics	com.bluekai.sdk.
+154	BlueConic	Analytics	com.blueconic
+155	Apteligent by VMWare (formerly Crittercism)		com.crittercism.app.Crittercism
+156	AdFit (Daum)		com.kakao.adfit.
+157	Adform		com.adform.sdk.
+158	Adfurikun	Advertisement	jp.tjkapp.adfurikunsdk.|com.glossomads.sdk.
+159	Mobvista	Analytics,Profiling	com.mobvista.
+160	Placed		com.placed.client
+161	Adot		com.adotmob
+162	Appodeal		com.appodeal.ads.|com.appodealx.
+163	AppMonet		com.monet.
+164	Soomla		com.soomla.
+165	Adincube		com.adincube.sdk.
+166	Persona.ly		ly.persona.sdk
+167	Branch	Analytics	io.branch.
+168	Cheetah Ads		com.cmcm.
+169	Vungle	Advertisement	com.vungle.publisher.|com.vungle.warren.
+170	Criteo		com.criteo.
+171	Mapbox		com.mapbox.mapboxsdk.module.telemetry|com.mapbox.mapboxsdk.maps.TelemetryDefinition|com.mapbox.android.telemetry.
+172	Optimizely	Analytics	com.optimizely.
+173	Taboola		com.taboola.
+174	CleverTap	Analytics,Profiling,Location	com.clevertap.
+175	myTracker		com.my.tracker.
+176	Cloudmobi		com.cloudtech.
+177	ADLIB		com.mocoplex.adlib.
+178	Brightcove		com.brightcove
+179	DOV-E	Advertisement	com.dv.DVSDK
+180	InMarket		com.inmarket
+181	Pilgrim by Foursquare	Location	com.foursquare.pilgrim|com.foursquare.pilgrimsdk.android
+182	OtherLevels		com.otherlevels.
+183	PubNative	Advertisement	net.pubnative
+184	Appnext		com.appnext.sdk
+185	MobFox	Analytics,Profiling,Advertisement	com.mobfox.|com.adsdk.sdk.
+186	ShallWeAD		com.jm.co.shallwead.sdk.|com.co.shallwead.sdk.
+187	deltaDNA	Analytics	com.deltadna
+188	Display		io.display.
+189	HyprMX	Advertisement	com.hyprmx.android.sdk.
+190	Bugly		com.tencent.bugly.
+191	Duapps		com.duapps.
+192	Swrve	Analytics,Profiling,Location	com.swrve.sdk
+193	OneSignal		com.onesignal.
+194	Appdynamics	Analytics,Profiling	com.appdynamics.
+195	Startapp	Analytics,Advertisement	com.startapp.
+196	AerServ	Advertisement	com.aerserv.sdk.
+197	INFOnline		de.infonline.
+198	myTarget	Advertisement	com.my.target.
+199	Tapjoy		com.tapjoy.
+200	Mintegral	Analytics,Advertisement	com.mintegral.|com.mbridge.msdk.
+201	Gimbal		com.gimbal.android
+202	Conviva		com.conviva.
+203	Auditude		com.auditude.ads
+204	Instreamatic (Adman)	Analytics,Advertisement	com.instreamatic
+205	GameAnalytics	Analytics,Profiling	com.gameanalytics.sdk
+206	Instabug	Crash reporting	com.instabug.
+207	Bugsnag	Crash reporting	com.bugsnag.
+208	Moodmedia	Advertisement,Location	com.moodmedia
+209	Houndify	Identification,Location	com.hound
+210	OpenX	Analytics,Advertisement,Location	com.openx.view.plugplay|com.openx.android_sdk_openx
+211	Taplytics	Analytics,Advertisement	com.taplytics.sdk
+212	Yinzcam Sobek	Analytics,Advertisement,Location	com.yinzcam.sobek
+213	Ooyala	Advertisement	com.ooyala
+214	Kiip	Advertisement	me.kiip.sdk
+215	MobPower	Advertisement	com.mobpower.
+216	AdBuddiz	Advertisement	com.purplebrain.adbuddiz.sdk.
+218	Integral Ad Science		com.integralads.avid.library
+219	AltBeacon		org.altbeacon.beacon.|com.altbeacon.beacon.|org.altbeacon.bluetooth.
+220	Salesforce Marketing Cloud		com.salesforce.marketingcloud
+221	Mozilla Telemetry		org.mozilla.telemetry|org.mozilla.gecko.telemetry|mozilla.telemetry.glean.|org.mozilla.fenix.GleanMetrics|org.mozilla.fenix.components.metrics
+222	nend	Advertisement	net.nend.android|net.nend.unity.
+223	Pusher		com.pusher.client.
+224	FreeWheel	Advertisement	tv.freewheel.ad.
+225	TNK Factory	Advertisement	com.tnkfactory.ad
+226	Axonix		com.axonix.android.sdk|com.mobclix.android.sdk
+227	Gemius HeatMap		com.gemius.sdk
+228	YouAppi		com.youappi.sdk.
+229	Adobe Experience Cloud		com.adobe.marketing.mobile
+230	Teads	Advertisement	tv.teads.|teads.tv.
+231	In Loco		com.inlocomedia.android
+232	IQzone	Advertisement	com.iqzone
+233	Bugfender	Crash reporting,Analytics	com.bugfender.sdk.
+234	Wootric	Analytics	com.wootric.androidsdk.
+235	KIDOZ	Advertisement	com.kidoz.sdk
+236	PubMatic	Advertisement	com.pubmatic.sdk
+237	Kissmetrics	Analytics	com.kissmetrics
+238	Microsoft Visual Studio App Center Crashes	Crash reporting	com.microsoft.appcenter.crashes
+239	Webtrekk	Analytics	com.webtrekk.webtrekksdk
+240	Google Analytics Plugin (Cordova)	Analytics	com.danielcwilson.plugins.analytics
+241	Bugsee	Crash reporting	com.bugsee.library.Bugsee
+242	Splunk MINT	Analytics	com.splunk.mint
+243	Microsoft Visual Studio App Center Analytics	Analytics	com.microsoft.appcenter.analytics|com.microsoft.azure.mobile.analytics
+244	Nielsen	Analytics	com.nielsen.app
+245	Reveal Mobile	Analytics,Location	com.stepleaderdigital.reveal
+246	Metrics	Analytics	com.codahale.metrics
+247	Repro	Analytics	io.repro.android.
+248	Sensors Analytics	Analytics	com.sensorsdata.analytics.android.sdk
+249	Tenjin	Analytics	com.tenjin.android.
+250	Tapstream	Analytics	com.tapstream.sdk
+251	Singular	Analytics	com.singular.sdk
+252	CallDorado	Advertisement	com.calldorado.android
+253	UXCam	Analytics,Profiling	com.uxcam.
+254	Upsight	Analytics,Profiling,Advertisement	com.upsight.android
+255	Appcelerator Analytics	Analytics	com.appcelerator.aps.|org.appcelerator.titanium.analytics
+256	Adbrix	Analytics,Profiling	com.igaworks.adbrix
+257	Cauly	Advertisement	com.fsn.cauly|com.trid.tridad|com.cauly.android.ad.
+258	Tapdaq	Advertisement	com.tapdaq.sdk.|com.tapdaq.adapters.
+259	Verve	Advertisement	com.vervewireless.advert.
+260	Apsalar	Analytics,Profiling,Advertisement	com.apsalar.sdk.
+261	PingStart	Advertisement	com.pingstart.adsdk.
+262	Keen	Analytics	io.keen.client.
+263	Revmob	Advertisement	com.revmob.ads.
+264	Emarsys Predict		com.emarsys.predict
+265	Lotame		com.lotame.android
+266	FollowAnalytics		com.followanalytics.
+267	Chartbeat	Analytics	com.chartbeat.androidsdk
+268	MoEngage	Analytics	com.moengage.
+269	Altamob	Advertisement	com.altamob.sdk
+270	Tealeaf	Analytics	com.tl.uic.Tealeaf
+271	AMoAd		com.amoad.
+272	AdAdapted	Analytics,Advertisement	com.adadapted.android.sdk.
+273	AdMuing	Advertisement	com.admuing.danmaku.
+274	Adcash	Advertisement	com.adcash.mobileads.
+275	Admixer	Advertisement	com.admixer|net.admixer.sdk
+276	Admost	Advertisement	admost.sdk.|admost.adserver.
+277	Alohalytics	Analytics	org.alohalytics.
+278	Amobee		com.amobee.
+279	Anagog	Analytics,Location	com.anagog.jedai
+280	Bazaarvoice	Analytics,Location	com.bazaarvoice.bvandroidsdk
+281	BeaconsInSpace (Fysical)	Location	com.beaconsinspace.android.beacon.detector.
+282	Conversant		com.conversantmedia|com.greystripe.android.
+283	Glympse	Location	com.glympse.android.
+284	Herow	Analytics,Profiling,Location	com.connecthings.herow
+285	Placer	Analytics,Profiling,Location	com.placer.client.Placer
+286	PushSpring		com.pushspring.sdk.PushSpring
+287	Pyze	Analytics	com.pyze.
+288	Radar		io.radar.sdk.Radar
+289	Roximity	Location	com.roximity.sdk.
+290	Sentiance		com.sentiance.sdk.
+291	SmartLook	Profiling,Location	com.smartlook.sdk.smartlook.
+292	Square Metrics		com.beaconinside.proximitysdk.ProximityService
+293	TalkingData	Analytics,Advertisement	com.talkingdata.sdk.|com.tendcloud.tenddata.|com.talkingdata.appanalytics.|com.talkingdata.adtracking.|com.tendcloud.appcpa.|com.apptalkingdata.push.|com.gametalkingdata.push.
+294	flymob		com.flymob.sdk.
+295	AdFalcon	Advertisement	com.noqoush.adfalcon.android.sdk
+296	Bitly		com.bitly.Bitly
+297	Enhance		co.enhance.Enhance
+298	Esri ArcGIS	Location	com.esri.arcgisruntime.
+299	GIPHY Analytics	Analytics	com.giphy.sdk.analytics|com.giphy.sdk.tracking
+300	Heap	Analytics	com.heapanalytics
+301	Inneractive	Advertisement	com.inneractive.api.ads
+302	MDOTM	Advertisement	com.mdotm.android
+303	Metaps	Advertisement	com.metaps
+304	Parse.ly	Analytics	com.parsely.parselyandroid
+305	Pollfish	Profiling	com.pollfish
+306	Qualtrics		com.qualtrics.digital.
+307	Tamoco	Location,Analytics	com.tamoco.sdk
+308	Vpon	Analytics,Profiling,Advertisement	com.vpon.ads|com.vpadn.analytics|com.vpadn.ads.|com.vpadn.widget.
+309	YuMe	Advertisement	com.yume.android
+310	Zapr	Analytics,Advertisement,Location	com.redbricklane.zapr
+311	mediba	Advertisement	com.mediba.jp|mediba.ad.sdk.android.openx
+312	Google AdMob	Advertisement	com.google.ads.|com.google.android.gms.ads.AdView|com.google.android.gms.ads.AdActivity|com.google.android.gms.ads.AdRequest|com.google.android.gms.ads.mediation|com.google.android.gms.ads.doubleclick|com.google.android.ads.|com.google.unity.ads.|com.google.android.gms.admob|com.google.firebase.firebase_ads.
+313	Unacast Pure	Location	com.pure.internal.|com.pure.sdk.
+314	Factual		com.factual.engine|com.factual.Factual
+315	Footmarks	Location	com.footmarks.footmarkssdkm2
+316	OzTAM	Analytics	au.com.oztam.
+317	Receptiv (formerly Mediabrix)	Advertisement	com.mediabrix.android
+318	Tutela		com.tutelatechnologies.sdk
+319	Twine Data		com.twine.sdk
+320	Verizon Ads	Analytics,Profiling,Identification,Advertisement,Location	com.verizon.ads|com.verizondigitalmedia.mobile.|com.oath.mobile.
+321	adPOPcorn	Advertisement	com.igaworks.adpopcorn|com.igaworks.ssp.
+322	maio by i-mobile		jp.maio.sdk.
+323	360Dialog	Analytics,Profiling,Identification,Advertisement,Location	com.threesixtydialog.sdk.
+324	ABTasty	Analytics	com.abtasty
+325	ACRCloud	Analytics	com.acrcloud
+326	Aarki	Analytics,Profiling,Identification,Advertisement	com.aarki
+327	Actv8me	Profiling,Identification,Advertisement,Location	me.actv8
+328	IAB Open Measurement	Identification,Advertisement	com.iab.omid.library|com.prime31.util.IabHelperImpl|com.prime31.IAB.
+333	Huawei Mobile Services (HMS) Core	Analytics,Advertisement,Location	com.huawei.hms.analytics|com.huawei.hms.location|com.huawei.hms.plugin.analytics|com.huawei.hms.plugin.ads|com.huawei.updatesdk.|com.huawei.agconnect.|com.huawei.hms.support.api.push.|com.huawei.hms.flutter.analytics.
+334	Akamai MAP	Analytics	com.akamai.android.sdk.AkaMap
+336	Mail.ru		ru.mail.mrgservice.advertising|ru.mail.mrgservice.analytics
+337	Airpush	Advertisement	com.airpush.
+338	Alimama (formerly AdsMogo)	Advertisement	com.adsmogo.|com.alimama.
+339	AnySDK	Analytics,Advertisement	com.anysdk.framework.AnalyticsWrapper|com.anysdk.framework.AdsWrapper
+340	Button	Analytics,Profiling,Identification	com.usebutton.sdk.
+341	Carto (formerly Nutiteq)	Advertisement,Location	com.nutiteq|com.carto
+342	Didomi	Analytics	io.didomi.sdk.
+343	JiGuang Aurora Mobile JPush	Analytics	cn.jpush.android
+344	Jumio	Identification	com.jumio.MobileSDK
+345	Lenddo	Analytics,Identification,Location	com.lenddo.mobile
+346	POKKT	Advertisement	com.pokkt.sdk.
+347	Prebid Mobile	Advertisement	org.prebid.mobile
+348	SK planet Tad	Advertisement	com.skplanet.tad
+349	Split	Analytics	io.split.android.
+350	Exponea	Analytics	com.infinario.android.infinariosdk.|com.exponea.sdk|com.sygic.aura.
+351	IPQualityScore	Profiling,Location	com.ipqualityscore.
+352	Opensignal	Analytics,Location	com.opensignal.datacollection.
+353	SignalFrame	Location	com.wirelessregistry.observersdk.
+354	X-Mode	Analytics,Location	io.xmode.BcnConfig|io.xmode.locationsdk|io.mysdk.
+355	OneAudience	Analytics,Profiling	com.oneaudience.sdk.
+356	OpenBack		com.openback
+357	PredicIO	Identification,Location,Analytics,Advertisement	com.telescope.android|io.predic.tracker
+358	AdLocus	Profiling,Identification,Advertisement,Location	com.adlocus.
+359	Adcenix	Advertisement	com.adcenix.
+360	Admitad	Advertisement	ru.tachos.admitadstatisticsdk
+361	AutoNavi / Amap	Location	com.amap.api
+362	IBM Digital Analytics	Analytics	com.digitalanalytics.
+363	Pangle	Advertisement	com.bytedance|com.pgl|com.pangle.global
+364	YOC VIS.X	Advertisement	com.yoc.visx
+365	Ad Generation	Advertisement	com.socdm.d.adgeneration.
+366	Adjoe	Advertisement	io.adjoe.sdk.|io.adjoe.protection.
+367	AppVador	Advertisement	com.appvador.ads.
+368	Appodeal Stack	Analytics,Advertisement	com.explorestack.
+369	AppsGeyser	Advertisement	com.appsgeyser.sdk|com.appsgeyser.multiTabApp.VideoPlayerActivity
+370	BidMachine	Advertisement	io.bidmachine.
+371	BugSense	Crash reporting	com.bugsense.trace.
+372	BuzzAd Benefit	Advertisement	com.buzzvil.
+373	GOM Factory AdPie	Advertisement	com.gomfactory.adpie.
+374	JumpTap	Advertisement	com.jumptap.adtag.
+375	LoopMe	Advertisement	com.loopme.
+376	Raygun	Crash reporting,Analytics	com.mindscapehq.android.raygun4android
+377	RjFun	Advertisement	com.rjfun.cordova.ad|com.rjfun.cordova.admob
+378	SuperAwesome	Advertisement	tv.superawesome.sdk|tv.superawesome.lib.
+379	TapResearch	Analytics,Profiling	com.tapr.sdk.|com.tapr.internal.|com.tapr.helpers.
+380	Tappx	Advertisement	com.tappx.sdk.android
+381	ThinkingData Analytics	Analytics,Identification	cn.thinkingdata.
+382	VKontakte SDK	Identification	com.vk.sdk.|com.vk.api.sdk.
+383	Virgo Mobile	Advertisement	com.virgo.ads.
+384	Zoho Analytics	Analytics	com.zoho.zanalytics.
+385	fineboost	Analytics,Advertisement	com.fineboost.
+386	Acuant	Profiling	com.acuant.acuantcamera
+387	Anvato (A Google Company)	Analytics,Profiling,Identification,Advertisement,Location	com.anvato.androidsdk.
+388	Blesh	Location	com.blesh.sdk.
+389	Bluecats	Location	com.bluecats.sdk
+390	CoolaData	Analytics,Profiling	com.cooladata.android.
+391	FLUZO	Analytics	com.fluzo.sdk.
+392	Facebook Flipper	Analytics	com.facebook.flipper
+393	GPShopper	Analytics	com.gpshopper
+394	IndoorAtlas	Analytics,Location	com.indooratlas.android.sdk
+395	Janrain	Identification	com.janrain.android|com.janrain.android.engage|com.janrain.android.capture
+396	MOCA	Analytics,Profiling,Location	com.innoquant.moca
+397	Point Inside	Analytics,Location	com.pointinside
+398	Proximi.io	Analytics,Location	io.proximi.proximiiolibrary
+399	ScoreLoop		com.scoreloop.client.android
+400	Alooma	Analytics	com.github.aloomaio.androidsdk
+401	Analytics by NPAW (Youbora Suite)	Analytics,Profiling,Location	com.npaw.youbora.
+402	Beintoo	Analytics,Profiling,Advertisement,Location	com.beintoo.nucleon
+403	Bolts	Analytics	com.parse.bolts
+404	Cedexis Radar	Location	com.cedexis
+405	Cifrasoft	Identification,Advertisement,Location	com.cifrasoft.
+406	Flowsense	Analytics,Profiling,Location	com.flowsense.flowsensesdk.
+407	Geniee	Advertisement	jp.co.geniee.gnadsdk.
+408	Huq Sourcekit	Analytics,Location	io.huq.sourcekit.
+409	Insider	Analytics	com.useinsider.insider
+410	Mopinion	Analytics,Profiling	com.mopinion.mopinionsdk
+411	OfferToro	Advertisement	com.offertoro.sdk.
+412	OpenTelemetry (OpenCensus, OpenTracing)	Analytics	io.opencensus|io.opentelemetry
+413	Snapchat Login Kit	Identification	com.snapchat.kit.sdk.SnapLogin
+414	Zendrive	Analytics,Profiling,Location	com.zendrive.sdk.
+415	fullstory	Analytics	com.fullstory.instrumentation.|com.fullstory.util.|com.fullstory.jni.|com.fullstory.FS|com.fullstory.rust.|com.fullstory.FSSessionData
+416	Pendo	Analytics	sdk.insert.io.|sdk.pendo.io.
+417	Plexure	Analytics	co.vmob.sdk
+418	Swirl		com.swirl
+419	Treasure Data	Analytics,Profiling	com.treasuredata
+420	IBM Mobile Marketing (Acoustic)	Analytics,Advertisement	com.ibm.mce.sdk.|co.acoustic.mobile.push.sdk.|com.xtify.mce.sdk.|com.xtify.android.sdk.
+422	Solar2D (Corona)	Analytics,Advertisement	com.ansca.corona
+423	Amazon Mobile Analytics (Amplify)	Analytics	com.amplifyframework.analytics.
+424	AD(X)	Advertisement	com.adxcorp.ads|com.adxcorp.nativead
+425	AdGateMedia	Advertisement	com.adgatemedia.
+426	AdMarvel	Advertisement	com.admarvel.
+427	AdTiming	Advertisement	com.aiming.mdt.|com.adtiming.
+428	Adjust Unbotify	Analytics	com.unbotify.mobile.sdk.
+429	LotaData	Analytics,Profiling,Location	com.lotadata.moments.
+430	Marketo (an Adobe Company)	Analytics	com.marketo.
+431	PlaytestCloud Event Tracking	Analytics	com.playtestcloud.Analytics
+432	Rollbar	Crash reporting	com.rollbar.android.
+433	Snap Ad Kit	Advertisement	com.snap.adkit|com.snap.appadskit
+434	Synerise	Profiling,Identification,Advertisement	com.synerise.sdk
+435	UserExperior	Crash reporting,Analytics,Profiling,Location	com.userexperior
+436	Vdopia	Advertisement	com.vdopia.client.android.|com.vdopia.ads.
+437	AdGem	Advertisement	com.adgem.android.
+438	AdTrial	Advertisement	com.adtrial.sdk.
+439	Pincrux	Advertisement	com.pincrux.
+440	Tutucloud		org.lasque.tusdk.core|org.lasque.tusdkpulse.core
+441	Veloxity	Advertisement	net.veloxity.
+442	Yoadx	Advertisement	com.yoadx.yoadx.
+443	Coulus Coelib	Advertisement	coelib.c.couluslibrary
+444	ACRA	Crash reporting	org.acra.|ch.acra.
+445	Backtrace	Crash reporting	com.github.backtrace-labs.|backtraceio.library.
+447	Sentry	Crash reporting	io.sentry.|com.joshdholtz.sentry
+448	Yueying Crash SDK	Crash reporting,Analytics	com.uc.crashsdk|com.uc2.crashsdk

@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.4.0-rc7 — Open-source intelligence: MVT, Exodus
+- **Spyware indicators from MVT** (Amnesty International, Citizen Lab, Google, Lookout, Echap and others;
+  MIT / CC BY): 19 collections bundled (679 package names, 497 signing certificates, 3,461 APK
+  fingerprints, 6,548 domains). Used by the app risk scan (package/certificate, SHA-1 and SHA-256), the
+  malware fingerprint scan, and the DNS filter. Refreshed with the stalkerware list on tap.
+- **Spyware-server alerts**: while ad blocking runs, lookups of listed spyware servers are always refused
+  and notified, naming the app when Android identifies the flow owner (`getConnectionOwnerUid`).
+- **Trackers in apps** (Exodus Privacy database, ODbL): class names read from each app's DEX files on the
+  phone and matched against 428 tracker code signatures; cached per APK file.
+- **Firewall while ad blocking**: apps blocked in the firewall get no DNS answers while the ad blocker
+  holds the VPN (explicitly labelled partial; reports when the phone does not identify apps).
+- Fix: missing Compose `setValue` import (rc6 build).
+
 ## v0.4.0-rc6 — Known-malware fingerprint scanning
 - **Malware scan** (Protection): SHA-256 of every installed app's APK files (base + splits, cached by
   path/size/mtime) compared on the phone with known-malware fingerprints: Echap's 3,228 stalkerware

@@ -150,6 +150,8 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
     }
 
     private fun afterPolicyChange() {
+        // The ad blocker also refuses DNS to firewall-blocked apps, so it needs the new lists too.
+        if (AdBlockStore.status.value.running) runService { DnsFilterVpnService.reload(g.appContext) }
         if (FirewallStore.status.value.running) {
             if (!g.firewall.current().isEmpty) runService { FirewallVpnService.reload(g.appContext) } else runService { FirewallVpnService.stop(g.appContext) }
         }
@@ -189,6 +191,7 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
     // --- ad blocking ---
 
     fun loadAdBlock() {
+        loadIocInfo()
         viewModelScope.launch {
             g.adBlock.loadInfo()
             val cm = g.appContext.getSystemService(android.net.ConnectivityManager::class.java)

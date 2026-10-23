@@ -26,7 +26,16 @@ import javax.net.ssl.HttpsURLConnection
 
 enum class IocSource { BUNDLED, DOWNLOADED }
 
-data class IocInfo(val families: Int, val packages: Int, val certificates: Int, val source: IocSource, val updatedAtMillis: Long?)
+data class IocInfo(
+    val families: Int,
+    val packages: Int,
+    val certificates: Int,
+    val source: IocSource,
+    val updatedAtMillis: Long?,
+    /** MVT collections (Pegasus, Predator, ...) and their app/domain indicators. */
+    val spywareCollections: Int = 0,
+    val spywareDomains: Int = 0,
+)
 
 enum class IocUpdateResult { UPDATED, NETWORK_ERROR, INVALID }
 
@@ -37,13 +46,17 @@ data class NetApp(val packageName: String, val label: String, val isSystem: Bool
  * Collects public package facts for [AppRiskScanner] and manages the stalkerware indicator list. The list
  * ships in the APK; it is downloaded again only when the user taps "Update" (no background network use).
  */
-class SecurityRepository(private val context: Context) {
+class SecurityRepository(private val context: Context, private val indicators: IndicatorsRepository) {
     private val pm: PackageManager = context.packageManager
     private val iocFile = File(context.filesDir, "stalkerware_ioc.yaml")
     @Volatile private var cached: Pair<IocDatabase, IocInfo>? = null
 
+    /** Echap stalkerware list plus the MVT spyware collections, as one indicator database. */
     suspend fun ioc(): Pair<IocDatabase, IocInfo> = withContext(Dispatchers.IO) {
-        cached ?: loadIoc().also { cached = it }
+        cached ?: loadIoc().let { (db, info) ->
+            val mvt = indicators.indicators()
+            (db + mvt.asIoc()) to info.copy(spywareCollections = mvt.collections.size, spywareDomains = mvt.domainCount)
+        }.also { cached = it }
     }
 
     private fun loadIoc(): Pair<IocDatabase, IocInfo> {
@@ -91,7 +104,9 @@ class SecurityRepository(private val context: Context) {
         val db = IocDatabase.parse(text)
         if (db.entries.size < IocDatabase.MIN_ENTRIES_FOR_UPDATE) return@withContext IocUpdateResult.INVALID
         AtomicTextFile(iocFile.toPath()).write(text)
-        cached = db to info(db, IocSource.DOWNLOADED, System.currentTimeMillis())
+        // Spyware collections are refreshed in the same user action; a failure there keeps the old snapshot.
+        indicators.update()
+        cached = null
         IocUpdateResult.UPDATED
     }
 

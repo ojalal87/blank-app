@@ -3,18 +3,21 @@ package com.bright.onepluscare.core.security
 import java.util.Locale
 
 /** One stalkerware family from the Echap indicator list (https://github.com/AssoEchap/stalkerware-indicators, CC-BY 4.0). */
-data class IocEntry(val name: String, val packages: Set<String>, val certificates: Set<String>)
+data class IocEntry(val name: String, val packages: Set<String>, val certificates: Set<String>, val certificatesSha256: Set<String> = emptySet())
 
 class IocDatabase(val entries: List<IocEntry>) {
     private val byPackage: Map<String, IocEntry> = buildMap { this@IocDatabase.entries.forEach { e -> e.packages.forEach { put(it, e) } } }
     private val byCert: Map<String, IocEntry> = buildMap { this@IocDatabase.entries.forEach { e -> e.certificates.forEach { put(it, e) } } }
+    private val byCert256: Map<String, IocEntry> = buildMap { this@IocDatabase.entries.forEach { e -> e.certificatesSha256.forEach { put(it.uppercase(), e) } } }
 
     val packageCount: Int get() = byPackage.size
     val certificateCount: Int get() = byCert.size
 
     /** Matches by exact package name or by signing-certificate SHA-1 (uppercase hex, no colons). */
-    fun match(pkg: String, certSha1s: Collection<String>): IocEntry? =
-        byPackage[pkg] ?: certSha1s.firstNotNullOfOrNull { byCert[normalizeCert(it)] }
+    fun match(pkg: String, certSha1s: Collection<String>, certSha256s: Collection<String> = emptyList()): IocEntry? =
+        byPackage[pkg] ?: certSha1s.firstNotNullOfOrNull { byCert[normalizeCert(it)] } ?: certSha256s.firstNotNullOfOrNull { byCert256[normalizeCert(it)] }
+
+    operator fun plus(other: IocDatabase): IocDatabase = IocDatabase(entries + other.entries)
 
     companion object {
         val EMPTY = IocDatabase(emptyList())

@@ -152,6 +152,17 @@ Firewall screen → FirewallStore (blocked set) → VpnService.prepare consent (
 ```
 Rules, the IOC parser and `FirewallRules` (never start with an empty list) are in `core/security`.
 
+## Decision record — one VPN for firewall and ad blocking (2026-10-23)
+
+Considered: integrating RethinkDNS's `firestack` (MPL-2.0 Go library, gVisor userspace TCP/IP stack, AAR
+via JitPack) so that all apps pass through one VPN that both filters DNS and enforces per-app rules.
+Not adopted now because (1) its README states the APIs are unstable and undocumented, (2) it adds
+native libraries of tens of MB per ABI and a Go/NDK build path, (3) a forwarding stack would put every
+app's traffic through this app, a much larger trust and failure surface, and (4) none of it can be
+verified without a device. Adopted instead: in ad-blocking mode, DNS refusal for firewall-blocked apps
+(flow owner from `ConnectivityManager.getConnectionOwnerUid`), labelled "partial" in the UI. Revisit
+firestack once there is device testing and a pinned, documented release.
+
 ## Dependencies
 
 All versions live in `gradle/libs.versions.toml`. `core` depends only on kotlinx-coroutines-core and

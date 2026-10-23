@@ -47,6 +47,9 @@ security scan only (App Doctor still lists launchable apps).
 | Malware fingerprints | `files/malware_hashes.txt` | Public known-malware SHA-256 list (only after you tap Update; bundled list otherwise) | **No** |
 | APK fingerprint cache | `no_backup/apk_hash_cache.json` | Path, size, date and SHA-256 of app files already fingerprinted | **No** |
 | abuse.ch key (optional) | `shared_prefs/care_secrets.xml` | Your key, encrypted with an Android Keystore key | **No** |
+| Spyware indicators | `files/spyware_indicators.tsv` | Public MVT indicators (only after you tap Update; bundled snapshot otherwise) | **No** |
+| Tracker signatures | `files/exodus_trackers.tsv` | Public Exodus tracker signatures (only after you tap Update) | **No** |
+| Tracker results cache | `no_backup/tracker_cache.json` | APK path/size/date and tracker ids found | **No** |
 | Ad-block exceptions | `shared_prefs/care_adblock.xml` | Host names you chose to always allow | **No** |
 | Migration flag | `shared_prefs/care_migrations.xml` | One boolean | No |
 
@@ -55,6 +58,11 @@ configuration. The only network traffic is the Network Doctor check (gateway TCP
 an HTTPS GET to `connectivitycheck.gstatic.com/generate_204` — the endpoint Android itself uses) and, only
 when you tap *Update list* in Security scan, an HTTPS GET of the public stalkerware list from
 `raw.githubusercontent.com/AssoEchap/stalkerware-indicators` (no data about the phone is sent).
+
+Updates that the user starts by tapping fetch only public lists: `raw.githubusercontent.com` (Echap,
+StevenBlack, MVT indicators and the Amnesty/Echap files its index points to), `reports.exodus-privacy.eu.org`
+(tracker signatures) and, with the user's own key, `mb-api.abuse.ch`. No request contains data about the
+phone or its apps.
 
 The security scan results (which apps are installed and what they can do) stay in memory and are never
 written to disk, history or the diagnostic export. The firewall drops packets of blocked apps without

@@ -14,8 +14,16 @@ import java.io.File
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
+/** A lookup of a server listed in the spyware indicators (MVT / Echap). */
+data class SpywareHit(val domain: String, val collection: String, val app: String?)
+
 data class AdBlockStatus(
     val running: Boolean = false,
+    val spywareHits: List<SpywareHit> = emptyList(),
+    /** Lookups refused because the asking app is blocked in the firewall (needs Android to name the app). */
+    val firewallRefused: Int = 0,
+    /** null = not tried yet; false = this phone never told us which app asked. */
+    val attributionWorks: Boolean? = null,
     val queries: Int = 0,
     val blocked: Int = 0,
     /** Most-blocked hosts this session (in memory only, cleared when the filter stops). */

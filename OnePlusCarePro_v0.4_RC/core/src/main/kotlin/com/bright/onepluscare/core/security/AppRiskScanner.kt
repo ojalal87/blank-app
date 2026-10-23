@@ -19,6 +19,7 @@ data class AppSecurityFacts(
     val isDefaultSms: Boolean,
     val isVpnApp: Boolean,
     val firstInstallMillis: Long?,
+    val certSha256s: List<String> = emptyList(),
 )
 
 enum class ThreatLevel { NONE, LOW, MEDIUM, HIGH, CRITICAL }
@@ -78,7 +79,7 @@ object AppRiskScanner {
         val hasSms = f.grantedPermissions.any { it in SMS } || f.isDefaultSms
         val surveillance = f.grantedPermissions.count { it in SURVEILLANCE }
 
-        val family = if (f.isSystem) null else ioc.match(f.packageName, f.certSha1s)?.name
+        val family = if (f.isSystem) null else ioc.match(f.packageName, f.certSha1s, f.certSha256s)?.name
         if (family != null) out += SecurityFinding(FindingId.KNOWN_STALKERWARE, ThreatLevel.CRITICAL, family)
 
         if (!f.isSystem) {

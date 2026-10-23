@@ -43,6 +43,13 @@ class DnsFilterVpnService : VpnService() {
     @Volatile private var lastPublish = 0L
     @Volatile private var noUpstream = false
     @Volatile private var upstream: Pair<Long, List<InetAddress>>? = null
+    @Volatile private var spyware: com.bright.onepluscare.core.security.SpywareIndicators = com.bright.onepluscare.core.security.SpywareIndicators.EMPTY
+    @Volatile private var firewall: com.bright.onepluscare.core.security.FirewallPolicy = com.bright.onepluscare.core.security.FirewallPolicy.EMPTY
+    private val hits = java.util.concurrent.CopyOnWriteArrayList<com.bright.onepluscare.firewall.SpywareHit>()
+    private val alerted = java.util.Collections.newSetFromMap(ConcurrentHashMap<String, Boolean>())
+    private val refused = AtomicInteger()
+    @Volatile private var attributed: Boolean? = null
+    @Volatile private var netKind: Pair<Long, com.bright.onepluscare.core.security.NetKind>? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_STOP) {
@@ -56,6 +63,8 @@ class DnsFilterVpnService : VpnService() {
             return START_NOT_STICKY
         }
         policy = p
+        spyware = com.bright.onepluscare.data.IndicatorsRepository(this).loadSync()
+        firewall = FirewallStore(this).current()
         if (intent?.action == ACTION_RELOAD && tun != null) return START_STICKY
         return if (establish()) START_STICKY else {
             shutdown()
@@ -109,6 +118,33 @@ class DnsFilterVpnService : VpnService() {
     private fun handle(pkt: UdpPacket) {
         val q = Dns.parseQuery(pkt.payload) ?: return
         queries.incrementAndGet()
+        // 1. Known spyware infrastructure: always refused, and the user is told.
+        spyware.matchDomain(q.name)?.let { collection ->
+            val app = ownerUid(pkt)?.let(::appLabel)
+            hits.add(0, SpywareHit(q.name, collection, app))
+            while (hits.size > 20) hits.removeAt(hits.size - 1)
+            Dns.errorReply(pkt.payload, Dns.RCODE_NXDOMAIN)?.let { write(Packets.buildReply(pkt, it)) }
+            if (alerted.add(q.name)) {
+                com.bright.onepluscare.work.Notifications.showSecurityAlert(
+                    this, q.name.hashCode(), getString(R.string.ab_spyware_alert_title),
+                    getString(R.string.ab_spyware_alert_body, app ?: getString(R.string.ab_an_app), q.name, collection),
+                )
+            }
+            publish(force = true)
+            return
+        }
+        // 2. Apps blocked in the firewall get no DNS answers while the ad blocker holds the VPN (partial blocking).
+        val blockedHere = blockedForCurrentNetwork()
+        if (blockedHere.isNotEmpty()) {
+            val uid = ownerUid(pkt)
+            val pkgs = uid?.let { u -> runCatching { packageManager.getPackagesForUid(u)?.toSet() }.getOrNull() }.orEmpty()
+            if (pkgs.any { it in blockedHere }) {
+                refused.incrementAndGet()
+                Dns.errorReply(pkt.payload, Dns.RCODE_NXDOMAIN)?.let { write(Packets.buildReply(pkt, it)) }
+                publish(force = false)
+                return
+            }
+        }
         val verdict = policy?.decide(q.name) ?: DnsVerdict.ALLOW
         if (verdict == DnsVerdict.BLOCK) {
             blocked.incrementAndGet()
@@ -143,6 +179,50 @@ class DnsFilterVpnService : VpnService() {
         Dns.errorReply(pkt.payload, Dns.RCODE_SERVFAIL)?.let { write(Packets.buildReply(pkt, it)) }
     }
 
+    /** Which app asked (Android 10+ tells the active VPN app the owner of a flow in its tunnel). */
+    private fun ownerUid(pkt: UdpPacket): Int? {
+        if (android.os.Build.VERSION.SDK_INT < 29) { attributed = false; return null }
+        val cm = getSystemService(ConnectivityManager::class.java) ?: return null
+        val uid = runCatching {
+            cm.getConnectionOwnerUid(
+                android.system.OsConstants.IPPROTO_UDP,
+                InetSocketAddress(InetAddress.getByAddress(pkt.src), pkt.srcPort),
+                InetSocketAddress(InetAddress.getByAddress(pkt.dst), pkt.dstPort),
+            )
+        }.getOrNull()?.takeIf { it >= 0 && it != android.os.Process.INVALID_UID }
+        if (uid != null) attributed = true else if (attributed == null) attributed = false
+        return uid
+    }
+
+    private fun appLabel(uid: Int): String? = runCatching {
+        val pkg = packageManager.getPackagesForUid(uid)?.firstOrNull() ?: return null
+        packageManager.getApplicationInfo(pkg, 0).loadLabel(packageManager).toString()
+    }.getOrNull()
+
+    private fun blockedForCurrentNetwork(): Set<String> {
+        val f = firewall
+        if (f.isEmpty) return emptySet()
+        val now = SystemClock.elapsedRealtime()
+        val kind = netKind?.takeIf { now - it.first < 10_000 }?.second ?: run {
+            val cm = getSystemService(ConnectivityManager::class.java)
+            val caps = cm?.activeNetwork?.let { cm.getNetworkCapabilities(it) }
+            val k = when {
+                caps == null -> com.bright.onepluscare.core.security.NetKind.NONE
+                caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI) -> com.bright.onepluscare.core.security.NetKind.WIFI
+                caps.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR) -> com.bright.onepluscare.core.security.NetKind.MOBILE
+                else -> com.bright.onepluscare.core.security.NetKind.OTHER
+            }
+            netKind = now to k
+            k
+        }
+        return when (kind) {
+            com.bright.onepluscare.core.security.NetKind.WIFI -> f.blockWifi
+            com.bright.onepluscare.core.security.NetKind.MOBILE -> f.blockMobile
+            com.bright.onepluscare.core.security.NetKind.OTHER -> f.blockWifi intersect f.blockMobile
+            com.bright.onepluscare.core.security.NetKind.NONE -> emptySet()
+        }
+    }
+
     /** The real network's DNS servers (this app is outside the tunnel, so its active network is the real one). */
     private fun upstreamServers(): List<InetAddress> {
         val now = SystemClock.elapsedRealtime()
@@ -169,6 +249,9 @@ class DnsFilterVpnService : VpnService() {
             blocked = blocked.get(),
             topBlocked = top.entries.map { it.key to it.value.get() }.sortedByDescending { it.second }.take(20),
             noUpstream = noUpstream,
+            spywareHits = hits.toList(),
+            firewallRefused = refused.get(),
+            attributionWorks = attributed,
         )
     }
 
