@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.4.0-rc6 — Known-malware fingerprint scanning
+- **Malware scan** (Protection): SHA-256 of every installed app's APK files (base + splits, cached by
+  path/size/mtime) compared on the phone with known-malware fingerprints: Echap's 3,228 stalkerware
+  samples (bundled, CC BY 4.0, refresh on tap) and, optionally, MalwareBazaar's latest APK fingerprints
+  using the user's own free abuse.ch key (stored with an Android Keystore AES-GCM key, sent only as a
+  header). In memory: 64-bit prefixes, every hit confirmed against the full hash.
+- **APK check before installing**: pick a file; it is fingerprinted while copied to a private cache,
+  parsed with `getPackageArchiveInfo` and judged KNOWN_MALICIOUS / SUSPICIOUS / NO_KNOWN_MATCH /
+  INCONCLUSIVE, with what the app could do once installed. The copy is deleted afterwards.
+- The background watch also fingerprints newly installed or updated apps.
+
 ## v0.4.0-rc5 — Protection layers
 - **Background security watch** (opt-in, off by default, read-only): about hourly checks apps installed or
   updated since the last run (`PackageManager.getChangedPackages`, reset-safe across reboots), new holders of

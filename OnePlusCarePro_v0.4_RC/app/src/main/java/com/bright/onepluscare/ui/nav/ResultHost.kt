@@ -11,6 +11,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.bright.onepluscare.ui.vm.ScanViewModel
 import com.bright.onepluscare.ui.vm.SecurityViewModel
+import com.bright.onepluscare.ui.vm.MalwareScanViewModel
 import com.bright.onepluscare.ui.vm.SettingsViewModel
 import com.bright.onepluscare.ui.vm.TrashViewModel
 import com.bright.onepluscare.ui.vm.careViewModel
@@ -64,6 +65,16 @@ fun ActivityResultHost() {
         if (!security.local.consentLaunched) {
             securityVm.consentLaunched()
             consentLauncher.launch(consent)
+        }
+    }
+
+    val malwareVm: MalwareScanViewModel = careViewModel()
+    val malware by malwareVm.state.collectAsStateWithLifecycle()
+    val apkLauncher = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> malwareVm.onApkPicked(uri) }
+    LaunchedEffect(malware.pickRequested) {
+        if (malware.pickRequested) {
+            malwareVm.pickLaunched()
+            apkLauncher.launch(arrayOf("application/vnd.android.package-archive", "application/octet-stream"))
         }
     }
 

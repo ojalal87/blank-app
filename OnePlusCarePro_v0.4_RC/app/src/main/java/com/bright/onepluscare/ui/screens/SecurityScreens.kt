@@ -179,6 +179,7 @@ fun SecurityScreen(nav: Navigator, padding: PaddingValues) {
         }
 
         item { SectionHeader(stringResource(R.string.sec_protection)) }
+        item { NavRow(Icons.Outlined.GppMaybe, stringResource(R.string.screen_malware), stringResource(R.string.mw_subtitle), { nav.go(Dest.MALWARE_SCAN) }) }
         item {
             CareCard {
                 Column {
@@ -464,3 +465,159 @@ fun AdBlockScreen(nav: Navigator, padding: PaddingValues) {
 }
 
 private const val PRIVATE_DNS_ADBLOCK = "dns.adguard-dns.com"
+
+private fun com.bright.onepluscare.core.security.ScanVerdict.tone() = when (this) {
+    com.bright.onepluscare.core.security.ScanVerdict.KNOWN_MALICIOUS -> Tone.CRITICAL
+    com.bright.onepluscare.core.security.ScanVerdict.SUSPICIOUS -> Tone.ATTENTION
+    com.bright.onepluscare.core.security.ScanVerdict.NO_KNOWN_MATCH -> Tone.HEALTHY
+    com.bright.onepluscare.core.security.ScanVerdict.INCONCLUSIVE -> Tone.NEUTRAL
+}
+
+private fun com.bright.onepluscare.core.security.ScanVerdict.label() = when (this) {
+    com.bright.onepluscare.core.security.ScanVerdict.KNOWN_MALICIOUS -> R.string.mw_v_malicious
+    com.bright.onepluscare.core.security.ScanVerdict.SUSPICIOUS -> R.string.mw_v_suspicious
+    com.bright.onepluscare.core.security.ScanVerdict.NO_KNOWN_MATCH -> R.string.mw_v_no_match
+    com.bright.onepluscare.core.security.ScanVerdict.INCONCLUSIVE -> R.string.mw_v_inconclusive
+}
+
+private fun com.bright.onepluscare.core.security.HashSource.label() = when (this) {
+    com.bright.onepluscare.core.security.HashSource.ECHAP_STALKERWARE -> R.string.mw_src_echap
+    com.bright.onepluscare.core.security.HashSource.MALWAREBAZAAR -> R.string.mw_src_bazaar
+}
+
+@Composable
+fun MalwareScanScreen(nav: Navigator, padding: PaddingValues) {
+    val vm: com.bright.onepluscare.ui.vm.MalwareScanViewModel = careViewModel()
+    val s by vm.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    LaunchedEffect(Unit) { vm.load() }
+    var keyInput by androidx.compose.runtime.saveable.rememberSaveable { androidx.compose.runtime.mutableStateOf("") }
+
+    ScreenScaffold(title = stringResource(R.string.screen_malware), outerPadding = padding, onBack = nav.back, message = s.message, onMessageShown = vm::messageShown) {
+        item { NoticeCard(Tone.INFO, stringResource(R.string.mw_intro_title), stringResource(R.string.mw_intro_body)) }
+
+        // 1. Installed apps
+        item { SectionHeader(stringResource(R.string.mw_installed)) }
+        item { FwSwitch(stringResource(R.string.mw_include_system), stringResource(R.string.mw_include_system_body), s.includeSystem) { vm.setIncludeSystem(it) } }
+        item {
+            if (s.scanning) ProgressBlock(stringResource(R.string.mw_scanning), s.progress, onCancel = vm::cancelScan)
+            else PrimaryAction(stringResource(R.string.mw_scan_installed), vm::scanInstalled, icon = Icons.Outlined.Search)
+        }
+        s.installed?.let { r ->
+            item {
+                CareCard {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(stringResource(R.string.sec_result), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                            StatusPill(if (r.matches.isEmpty()) Tone.HEALTHY else Tone.CRITICAL, stringResource(if (r.matches.isEmpty()) R.string.mw_v_no_match else R.string.mw_v_malicious))
+                        }
+                        Text(stringResource(R.string.mw_installed_result, r.scannedApps, Fmt.bytes(context, r.bytesHashed), r.matches.size), style = MaterialTheme.typography.bodyMedium)
+                        if (r.unreadable > 0) Text(stringResource(R.string.mw_unreadable, r.unreadable), style = MaterialTheme.typography.bodySmall)
+                    }
+                }
+            }
+            items(r.matches, key = { "m-" + it.packageName }) { m ->
+                NoticeCard(
+                    Tone.CRITICAL, m.label, stringResource(R.string.mw_match_body, m.entry.family, stringResource(m.entry.source.label())),
+                    action = { TextButton(onClick = { vm.openApp(m.packageName) }) { Text(stringResource(R.string.sec_open_app_info)) } },
+                )
+            }
+        }
+
+        // 2. APK file before installing
+        item { SectionHeader(stringResource(R.string.mw_apk)) }
+        item { Text(stringResource(R.string.mw_apk_body), style = MaterialTheme.typography.bodyMedium) }
+        item {
+            if (s.checkingApk) ProgressBlock(stringResource(R.string.mw_checking_apk), null)
+            else SecondaryAction(stringResource(R.string.mw_pick_apk), vm::pickApk, Modifier.fillMaxWidth(), icon = Icons.Outlined.Search)
+        }
+        if (s.apkFailed) item { NoticeCard(Tone.ATTENTION, stringResource(R.string.mw_v_inconclusive), stringResource(R.string.mw_apk_failed)) }
+        s.apk?.let { a ->
+            item {
+                CareCard {
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(a.label ?: a.fileName ?: "APK", style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            StatusPill(a.report.verdict.tone(), stringResource(a.report.verdict.label()))
+                        }
+                        a.packageName?.let { InfoRow(stringResource(R.string.mw_package), it) }
+                        a.versionName?.let { InfoRow(stringResource(R.string.mw_version), it) }
+                        InfoRow(stringResource(R.string.mw_size), Fmt.bytes(context, a.sizeBytes))
+                        a.report.sha256?.let { InfoRow("SHA-256", it.take(16) + "…") }
+                        a.report.hashMatch?.let { Text(stringResource(R.string.mw_match_body, it.family, stringResource(it.source.label())), style = MaterialTheme.typography.bodyMedium) }
+                        a.report.iocFamily?.let { Text(stringResource(R.string.sec_family, it), style = MaterialTheme.typography.bodyMedium) }
+                        Text(
+                            stringResource(
+                                when (a.report.verdict) {
+                                    com.bright.onepluscare.core.security.ScanVerdict.KNOWN_MALICIOUS -> R.string.mw_apk_malicious_advice
+                                    com.bright.onepluscare.core.security.ScanVerdict.SUSPICIOUS -> R.string.mw_apk_suspicious_advice
+                                    com.bright.onepluscare.core.security.ScanVerdict.NO_KNOWN_MATCH -> R.string.mw_apk_nomatch_advice
+                                    com.bright.onepluscare.core.security.ScanVerdict.INCONCLUSIVE -> R.string.mw_apk_failed
+                                },
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
+            }
+            val findings = a.report.assessment?.findings.orEmpty()
+            if (findings.isNotEmpty()) {
+                item { Text(stringResource(R.string.mw_apk_could), style = MaterialTheme.typography.titleSmall) }
+                items(findings, key = { "f-" + it.id.name }) { f ->
+                    CareCard {
+                        Column {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(f.id.title()), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                                StatusPill(f.level.tone(), stringResource(f.level.label()))
+                            }
+                            Text(stringResource(f.id.body()), style = MaterialTheme.typography.bodySmall)
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. Database
+        item { SectionHeader(stringResource(R.string.mw_db)) }
+        item {
+            CareCard {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    s.info?.let { i ->
+                        InfoRow(stringResource(R.string.mw_src_echap), Fmt.number(i.echap))
+                        InfoRow(stringResource(R.string.mw_src_bazaar), Fmt.number(i.bazaar))
+                        InfoRow(stringResource(R.string.sec_ioc_source), i.updatedAtMillis?.let { Fmt.date(context, it) } ?: stringResource(R.string.sec_ioc_bundled))
+                    }
+                    Text(stringResource(R.string.mw_db_note), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    SecondaryAction(stringResource(if (s.updating) R.string.sec_ioc_updating else R.string.mw_update_echap), vm::updateEchap, enabled = !s.updating, icon = Icons.Outlined.CloudDownload)
+                }
+            }
+        }
+        item {
+            CareCard {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(stringResource(R.string.mw_bazaar_title), style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(R.string.mw_bazaar_body), style = MaterialTheme.typography.bodySmall)
+                    if (s.hasKey) {
+                        Text(stringResource(R.string.mw_key_present), style = MaterialTheme.typography.bodyMedium)
+                        Row {
+                            SecondaryAction(stringResource(if (s.updating) R.string.sec_ioc_updating else R.string.mw_update_bazaar), vm::updateBazaar, enabled = !s.updating, icon = Icons.Outlined.CloudDownload)
+                            TextButton(onClick = vm::clearKey) { Text(stringResource(R.string.ab_remove)) }
+                        }
+                    } else {
+                        androidx.compose.material3.OutlinedTextField(
+                            value = keyInput, onValueChange = { keyInput = it.take(128) }, singleLine = true,
+                            label = { Text(stringResource(R.string.mw_key_label)) }, modifier = Modifier.fillMaxWidth(),
+                            visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                        )
+                        Row {
+                            TextButton(onClick = { vm.saveKey(keyInput); keyInput = "" }, enabled = keyInput.isNotBlank()) { Text(stringResource(R.string.mw_key_save)) }
+                            val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
+                            TextButton(onClick = { runCatching { uriHandler.openUri(com.bright.onepluscare.data.MalwareScanRepository.BAZAAR_KEY_URL) } }) { Text(stringResource(R.string.mw_key_get)) }
+                        }
+                    }
+                }
+            }
+        }
+        item { Text(stringResource(R.string.mw_limits), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
+    }
+}

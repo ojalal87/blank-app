@@ -30,6 +30,7 @@ fun ToolsScreen(nav: Navigator, padding: PaddingValues) {
     ScreenScaffold(title = stringResource(R.string.tab_tools), outerPadding = padding) {
         item { SectionHeader(stringResource(R.string.tools_protection)) }
         item { NavRow(Icons.Outlined.Shield, stringResource(R.string.screen_security), stringResource(R.string.sec_subtitle), { nav.go(Dest.SECURITY) }) }
+        item { NavRow(Icons.Outlined.Shield, stringResource(R.string.screen_malware), stringResource(R.string.mw_subtitle), { nav.go(Dest.MALWARE_SCAN) }) }
         item { NavRow(Icons.Outlined.Block, stringResource(R.string.screen_firewall), stringResource(R.string.fw_tools_subtitle), { nav.go(Dest.FIREWALL) }) }
         item { NavRow(Icons.Outlined.Block, stringResource(R.string.screen_adblock), stringResource(R.string.ab_subtitle), { nav.go(Dest.ADBLOCK) }) }
         item { NavRow(Icons.Outlined.VerifiedUser, stringResource(R.string.screen_hardening), stringResource(R.string.hd_subtitle), { nav.go(Dest.HARDENING) }) }

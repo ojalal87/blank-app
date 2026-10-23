@@ -123,6 +123,9 @@ class SecurityWatchWorker(ctx: Context, params: WorkerParameters) : CoroutineWor
             if (!baseline && changed != null) {
                 val installed = changed.packageNames.filter { runCatching { pm.getPackageInfo(it, 0) }.isSuccess }.toSet()
                 alerts += WatchRules.riskyChanged(g.security.assess(installed))
+                alerts += g.malwareScan.matchPackages(installed).map { m ->
+                    WatchAlert(WatchAlert.Kind.NEW_RISKY_APP, m.packageName, level = com.bright.onepluscare.core.security.ThreatLevel.CRITICAL)
+                }
             }
             changed?.let { store.sequence = it.sequenceNumber } ?: run { if (store.sequence == null) store.sequence = 0 }
             // 2. Special access grants.

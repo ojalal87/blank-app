@@ -4,3 +4,6 @@ by Echap (https://echap.eu.org) and contributors, licensed under
 Creative Commons Attribution 4.0 International (CC BY 4.0):
 https://creativecommons.org/licenses/by/4.0/
 Snapshot taken 2026-10-22. Unmodified. Users can refresh it in-app from the same URL.
+
+stalkerware_samples.csv is a snapshot of samples.csv from the same repository and licence
+(CC BY 4.0, Echap and contributors), taken 2026-10-23, unmodified.

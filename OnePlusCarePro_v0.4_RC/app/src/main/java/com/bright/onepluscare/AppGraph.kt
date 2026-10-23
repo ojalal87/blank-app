@@ -65,6 +65,8 @@ class AppGraph(context: Context) {
     val securityWatch = com.bright.onepluscare.work.SecurityWatchStore(appContext)
     val hardening = com.bright.onepluscare.data.HardeningRepository(appContext)
     val privacyAccess = com.bright.onepluscare.data.PrivacyAccessRepository(appContext, shizuku)
+    val secrets = com.bright.onepluscare.data.SecretStore(appContext)
+    val malwareScan = com.bright.onepluscare.data.MalwareScanRepository(appContext, security, secrets)
     val engine = RecommendationEngine()
 
     private val _results = MutableStateFlow(SharedResults())

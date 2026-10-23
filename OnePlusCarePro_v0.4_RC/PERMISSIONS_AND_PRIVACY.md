@@ -44,6 +44,9 @@ security scan only (App Doctor still lists launchable apps).
 | Downloaded stalkerware list | `files/stalkerware_ioc.yaml` | Public indicator list (only after you tap Update) | No |
 | Firewall lists | `shared_prefs/care_firewall.xml` | Package names blocked on Wi-Fi / on mobile | **No** |
 | Ad-block list | `files/adblock_hosts.txt` | Public hosts list (only after you tap Download) | **No** |
+| Malware fingerprints | `files/malware_hashes.txt` | Public known-malware SHA-256 list (only after you tap Update; bundled list otherwise) | **No** |
+| APK fingerprint cache | `no_backup/apk_hash_cache.json` | Path, size, date and SHA-256 of app files already fingerprinted | **No** |
+| abuse.ch key (optional) | `shared_prefs/care_secrets.xml` | Your key, encrypted with an Android Keystore key | **No** |
 | Ad-block exceptions | `shared_prefs/care_adblock.xml` | Host names you chose to always allow | **No** |
 | Migration flag | `shared_prefs/care_migrations.xml` | One boolean | No |
 
