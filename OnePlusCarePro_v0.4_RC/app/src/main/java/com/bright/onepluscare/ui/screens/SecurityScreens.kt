@@ -180,6 +180,17 @@ fun SecurityScreen(nav: Navigator, padding: PaddingValues) {
 
         item { SectionHeader(stringResource(R.string.sec_protection)) }
         item {
+            CareCard {
+                Column {
+                    FwSwitch(stringResource(R.string.watch_title), stringResource(R.string.watch_body), s.watchOn) { vm.setWatch(it) }
+                    if (s.watchOn && !vm.canNotify()) {
+                        Text(stringResource(R.string.watch_needs_notifications), style = MaterialTheme.typography.bodySmall)
+                        TextButton(onClick = { nav.go(Dest.PERMISSIONS) }) { Text(stringResource(R.string.screen_permissions)) }
+                    }
+                }
+            }
+        }
+        item {
             NavRow(Icons.Outlined.Block, stringResource(R.string.screen_firewall),
                 fwStatusText(s), { nav.go(Dest.FIREWALL) },
                 trailing = if (s.firewallOn) ({ StatusPill(Tone.HEALTHY, stringResource(R.string.on)) }) else null)

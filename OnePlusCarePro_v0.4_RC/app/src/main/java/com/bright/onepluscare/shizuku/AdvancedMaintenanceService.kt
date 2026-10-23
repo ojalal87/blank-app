@@ -67,6 +67,12 @@ class AdvancedMaintenanceService : IAdvancedMaintenanceService.Stub {
         enforceCaller()
         val op = TweakOp.decode(opJson) ?: return OpResult.encode(OpResult.REFUSED)
         val argv = TweakCommands.argvFor(op, selfPackage) ?: return OpResult.encode(OpResult.REFUSED)
+        if (op is TweakOp.AppOpsDump) {
+            // The raw dump is large and names every app; only the parsed, typed summary leaves this process.
+            val r = run(argv, OP_TIMEOUT_MS, MAX_DUMP_LINES)
+            val summary = com.bright.onepluscare.core.privacy.AppOpsHistory.parse(r.output, op.op).take(MAX_HISTORY_ENTRIES)
+            return OpResult.encode(r.copy(output = com.bright.onepluscare.core.privacy.AppOpsHistory.encode(summary)))
+        }
         return OpResult.encode(run(argv, OP_TIMEOUT_MS, if (op is TweakOp.PackagesList) MAX_LIST_LINES else MAX_OP_LINES))
     }
 
@@ -126,6 +132,8 @@ class AdvancedMaintenanceService : IAdvancedMaintenanceService.Stub {
         private const val OP_TIMEOUT_MS = 15_000L
         private const val MAX_OP_LINES = 200
         private const val MAX_LIST_LINES = 3_000
+        private const val MAX_DUMP_LINES = 40_000
+        private const val MAX_HISTORY_ENTRIES = 300
         const val REFUSED = "refused"
         const val NO_OUTPUT = "no output"
         private const val UNKNOWN_UID = -1

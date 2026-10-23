@@ -100,10 +100,32 @@ class SecurityRepository(private val context: Context) {
         AppRiskScanner.scan(collectFacts(onProgress), db, context.packageName)
     }
 
+    /** Assessment of just these packages (the background watch checks only what changed). */
+    suspend fun assess(only: Set<String>): List<com.bright.onepluscare.core.security.AppAssessment> = withContext(Dispatchers.IO) {
+        if (only.isEmpty()) return@withContext emptyList()
+        val (db, _) = ioc()
+        collectFacts({ _, _ -> }, only).filter { it.packageName != context.packageName }.map { AppRiskScanner.assess(it, db, context.packageName) }
+    }
+
+    /** Who currently holds accessibility, notification access and device admin. */
+    fun surfaces(): Map<com.bright.onepluscare.core.security.Surface, Set<String>> = mapOf(
+        com.bright.onepluscare.core.security.Surface.ACCESSIBILITY to enabledComponents(Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES),
+        com.bright.onepluscare.core.security.Surface.NOTIFICATION_LISTENER to enabledComponents("enabled_notification_listeners"),
+        com.bright.onepluscare.core.security.Surface.DEVICE_ADMIN to runCatching {
+            context.getSystemService(DevicePolicyManager::class.java)?.activeAdmins.orEmpty().mapTo(HashSet()) { it.packageName }
+        }.getOrDefault(emptySet()),
+    )
+
+    fun label(pkg: String): String = runCatching { pm.getApplicationInfo(pkg, 0).loadLabel(pm).toString() }.getOrDefault(pkg)
+
     @Suppress("DEPRECATION")
-    private suspend fun collectFacts(onProgress: (Int, Int) -> Unit): List<AppSecurityFacts> {
+    private suspend fun collectFacts(onProgress: (Int, Int) -> Unit, only: Set<String>? = null): List<AppSecurityFacts> {
         val flags = PackageManager.GET_PERMISSIONS or if (Build.VERSION.SDK_INT >= 28) PackageManager.GET_SIGNING_CERTIFICATES else PackageManager.GET_SIGNATURES
-        val packages: List<PackageInfo> = runCatching { pm.getInstalledPackages(flags) }.getOrDefault(emptyList())
+        val packages: List<PackageInfo> = if (only != null) {
+            only.mapNotNull { runCatching { pm.getPackageInfo(it, flags) }.getOrNull() }
+        } else {
+            runCatching { pm.getInstalledPackages(flags) }.getOrDefault(emptyList())
+        }
         val launchable = runCatching {
             pm.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER), 0).mapTo(HashSet()) { it.activityInfo.packageName }
         }.getOrDefault(emptySet())

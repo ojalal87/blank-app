@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.4.0-rc5 — Protection layers
+- **Background security watch** (opt-in, off by default, read-only): about hourly checks apps installed or
+  updated since the last run (`PackageManager.getChangedPackages`, reset-safe across reboots), new holders of
+  accessibility / notification access / device admin, and every 6 h unusual background uploads. Each
+  finding is notified once on a new "Security alerts" channel; lock-screen version never names the app.
+  The firewall notifies if Android revokes its VPN while the watch is on.
+- **Camera, mic & location log** (Shizuku): last uses per app from Android's own app-ops record, with
+  background use highlighted. `dumpsys appops --op` is run and parsed inside the Shizuku process; only a
+  typed summary crosses the Binder.
+- **Device hardening** checklist: screen lock, patch age, encryption, USB/wireless debugging (with the
+  Shizuku explanation), lock-screen notification content, apps that can install apps, current Wi-Fi
+  security (open/WEP/OWE/WPA), Private DNS; each with a Settings shortcut. Unreadable facts are "check
+  yourself", never "OK".
+
 ## v0.4.0-rc4 — Per-network firewall, data usage, ad blocking
 - **Firewall per network**: block Wi-Fi, mobile data or both for each app. The VPN follows network
   switches and contains only the apps blocked on the current network; when nothing is blocked there it

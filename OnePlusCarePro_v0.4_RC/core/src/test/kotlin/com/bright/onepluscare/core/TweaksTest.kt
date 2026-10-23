@@ -258,3 +258,14 @@ class TweakPlannerAndExecutorTest {
         assertTrue(journal.active().none { it.kind == TweakKind.DEBLOAT_DISABLE })
     }
 }
+
+class AppOpsDumpCommandTest {
+    @Test
+    fun `history op is a fixed read-only dumpsys argv`() {
+        val op = TweakOp.AppOpsDump(com.bright.onepluscare.core.privacy.PrivacyOp.MICROPHONE)
+        kotlin.test.assertTrue(op.readOnly)
+        kotlin.test.assertEquals(listOf("/system/bin/dumpsys", "appops", "--op", "RECORD_AUDIO"), TweakCommands.argvFor(op, "com.bright.onepluscare"))
+        kotlin.test.assertEquals(op, TweakOp.decode(TweakOp.encode(op)))
+        kotlin.test.assertNull(TweakOp.decode("""{"type":"appops_history","op":"READ_SMS"}"""))
+    }
+}

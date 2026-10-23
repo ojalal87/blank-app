@@ -62,6 +62,9 @@ class AppGraph(context: Context) {
     val firewall = com.bright.onepluscare.firewall.FirewallStore(appContext)
     val dataUsage = com.bright.onepluscare.data.DataUsageRepository(appContext)
     val adBlock = com.bright.onepluscare.firewall.AdBlockStore(appContext)
+    val securityWatch = com.bright.onepluscare.work.SecurityWatchStore(appContext)
+    val hardening = com.bright.onepluscare.data.HardeningRepository(appContext)
+    val privacyAccess = com.bright.onepluscare.data.PrivacyAccessRepository(appContext, shizuku)
     val engine = RecommendationEngine()
 
     private val _results = MutableStateFlow(SharedResults())
@@ -125,6 +128,7 @@ class AppGraph(context: Context) {
         trashChanged()
         step { Notifications.ensureChannels(appContext) }
         step { scheduler.apply(settings.settings.value.dailyScanEnabled) }
+        step { com.bright.onepluscare.work.SecurityWatchScheduler.apply(appContext, securityWatch.enabled.value) }
         _startupDone.value = true
         step { shizuku.start() }
     }

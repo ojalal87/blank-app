@@ -58,6 +58,12 @@ class DataUsageRepository(private val context: Context) {
         DataUsageReport(period, rows, rows.sumOf { it.usage.wifi }, rows.sumOf { it.usage.mobile }, unusual, mobile == null, now)
     }
 
+    /** For the background watch: today's unusual background uploaders with resolved owners. */
+    suspend fun unusualNow(now: Long = System.currentTimeMillis()): List<Pair<UsageOwner, UnusualUsage>>? = withContext(Dispatchers.IO) {
+        val nsm = context.getSystemService(NetworkStatsManager::class.java) ?: return@withContext null
+        unusualToday(nsm, now).map { resolve(it.uid) to it }
+    }
+
     /** Today's background upload per UID judged against the previous 14 days of the same app. */
     private suspend fun unusualToday(nsm: NetworkStatsManager, now: Long): List<UnusualUsage> {
         val todayStart = startOfDay(now, 0)

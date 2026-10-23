@@ -99,9 +99,11 @@ class ManifestSecurityTest {
 
     @Test
     fun `scheduled worker is read-only`() {
-        val src = File("src/main/java/com/bright/onepluscare/work/MaintenanceScanWorker.kt").readText()
-        listOf("moveToSafeTrash", "purge(", "expire(", "restore(", "systemTrashRequest", ".delete(").forEach {
-            assertFalse("worker must not call $it", src.contains(it))
+        for (name in listOf("MaintenanceScanWorker.kt", "SecurityWatch.kt")) {
+            val src = File("src/main/java/com/bright/onepluscare/work/$name").readText()
+            listOf("moveToSafeTrash", "purge(", "expire(", "restore(", "systemTrashRequest", ".delete(", "runOp(", "FirewallVpnService.start", "setBlocked").forEach {
+                assertFalse("$name must not call $it", src.contains(it))
+            }
         }
     }
 

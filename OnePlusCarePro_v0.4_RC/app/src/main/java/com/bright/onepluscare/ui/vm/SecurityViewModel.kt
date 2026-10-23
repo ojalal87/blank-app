@@ -59,6 +59,7 @@ data class SecurityUiState(
     val ad: AdBlockStatus = AdBlockStatus(),
     val listInfo: ListInfo? = null,
     val exceptions: Set<String> = emptySet(),
+    val watchOn: Boolean = false,
 ) {
     val firewallOn: Boolean get() = status.running
     /** Apps with any block (Wi-Fi, mobile or both). */
@@ -81,8 +82,9 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
     val state: StateFlow<SecurityUiState> = combine(
         combine(local, g.firewall.policy, FirewallStore.status, ::Triple),
         combine(AdBlockStore.status, g.adBlock.info, g.adBlock.exceptions, ::Triple),
-    ) { (l, p, st), (ad, info, ex) ->
-        SecurityUiState(l, p, st, ad, info, ex)
+        g.securityWatch.enabled,
+    ) { (l, p, st), (ad, info, ex), watch ->
+        SecurityUiState(l, p, st, ad, info, ex, watch)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SecurityUiState())
 
     fun loadIocInfo() {
@@ -248,6 +250,13 @@ class SecurityViewModel(private val g: AppGraph) : ViewModel() {
         afterPolicyChange()
         local.update { it.copy(message = str(if (FirewallStore.status.value.running) R.string.fw_blocked_now else R.string.fw_blocked_turn_on)) }
     }
+
+    fun setWatch(on: Boolean) {
+        g.securityWatch.setEnabled(on)
+        runCatching { com.bright.onepluscare.work.SecurityWatchScheduler.apply(g.appContext, on) }
+    }
+
+    fun canNotify(): Boolean = com.bright.onepluscare.work.Notifications.canPost(g.appContext)
 
     fun messageShown() = local.update { it.copy(message = null) }
 

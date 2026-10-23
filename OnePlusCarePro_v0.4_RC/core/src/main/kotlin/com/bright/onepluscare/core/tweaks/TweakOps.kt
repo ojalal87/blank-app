@@ -82,6 +82,10 @@ sealed interface TweakOp {
     @Serializable @SerialName("density_reset")
     data object DensityReset : TweakOp
 
+    /** Read-only: recent camera/mic/location accesses. Parsed in the privileged process (see AppOpsHistory). */
+    @Serializable @SerialName("appops_history")
+    data class AppOpsDump(val op: com.bright.onepluscare.core.privacy.PrivacyOp) : TweakOp { override val readOnly get() = true }
+
     companion object {
         val JSON = Json { ignoreUnknownKeys = false; classDiscriminator = "type"; encodeDefaults = true }
 

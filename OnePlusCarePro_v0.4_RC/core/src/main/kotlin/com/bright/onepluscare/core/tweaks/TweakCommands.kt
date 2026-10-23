@@ -10,6 +10,7 @@ object TweakCommands {
     private const val SETTINGS = "/system/bin/settings"
     private const val PM = "/system/bin/pm"
     private const val WM = "/system/bin/wm"
+    private const val DUMPSYS = "/system/bin/dumpsys"
 
     const val MIN_DPI = 120
     const val MAX_DPI = 960
@@ -52,6 +53,7 @@ object TweakCommands {
         is TweakOp.PackageInstallExisting -> if (isValidPackage(op.pkg)) listOf(CMD, "package", "install-existing", "--user", "0", op.pkg) else null
 
         TweakOp.DensityGet -> listOf(WM, "density")
+        is TweakOp.AppOpsDump -> listOf(DUMPSYS, "appops", "--op", op.op.opName)
         is TweakOp.DensitySet -> if (op.dpi in MIN_DPI..MAX_DPI) listOf(WM, "density", op.dpi.toString()) else null
         TweakOp.DensityReset -> listOf(WM, "density", "reset")
     }

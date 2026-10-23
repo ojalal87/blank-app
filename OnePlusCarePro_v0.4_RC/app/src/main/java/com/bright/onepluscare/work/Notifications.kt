@@ -17,7 +17,9 @@ import com.bright.onepluscare.core.health.HealthState
 
 object Notifications {
     const val CHANNEL_SCAN = "maintenance_scan"
+    const val CHANNEL_SECURITY = "security_alerts"
     private const val ID_SCAN = 3003
+    private const val ID_SECURITY_BASE = 0x40000
 
     fun ensureChannels(context: Context) {
         val nm = context.getSystemService(NotificationManager::class.java) ?: return
@@ -26,6 +28,40 @@ object Notifications {
             lockscreenVisibility = android.app.Notification.VISIBILITY_PRIVATE
         }
         nm.createNotificationChannel(channel)
+        nm.createNotificationChannel(
+            NotificationChannel(CHANNEL_SECURITY, context.getString(R.string.notif_channel_security), NotificationManager.IMPORTANCE_DEFAULT).apply {
+                description = context.getString(R.string.notif_channel_security_desc)
+                lockscreenVisibility = android.app.Notification.VISIBILITY_PRIVATE
+            },
+        )
+    }
+
+    /** Security watch / firewall alerts. The lock-screen version never names the app. */
+    fun showSecurityAlert(context: Context, id: Int, title: String, text: String) {
+        if (!canPost(context)) return
+        ensureChannels(context)
+        val intent = Intent(context, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val pending = PendingIntent.getActivity(context, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val publicVersion = NotificationCompat.Builder(context, CHANNEL_SECURITY)
+            .setSmallIcon(R.drawable.ic_stat_care)
+            .setContentTitle(context.getString(R.string.notif_security_public))
+            .build()
+        val n = NotificationCompat.Builder(context, CHANNEL_SECURITY)
+            .setSmallIcon(R.drawable.ic_stat_care)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text))
+            .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+            .setPublicVersion(publicVersion)
+            .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
+            .setContentIntent(pending)
+            .setAutoCancel(true)
+            .build()
+        if (Build.VERSION.SDK_INT >= 33 && context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) return
+        try {
+            NotificationManagerCompat.from(context).notify(ID_SECURITY_BASE + (id and 0xffff), n)
+        } catch (_: SecurityException) {
+        }
     }
 
     fun canPost(context: Context): Boolean =

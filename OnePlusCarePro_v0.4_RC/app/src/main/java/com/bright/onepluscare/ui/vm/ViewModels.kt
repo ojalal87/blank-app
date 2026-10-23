@@ -25,6 +25,8 @@ fun careViewModelFactory(graph: AppGraph): ViewModelProvider.Factory = viewModel
     initializer { TunerViewModel(graph) }
     initializer { SecurityViewModel(graph) }
     initializer { DataUsageViewModel(graph) }
+    initializer { PrivacyAccessViewModel(graph) }
+    initializer { HardeningViewModel(graph) }
 }
 
 val LocalViewModelFactory = staticCompositionLocalOf<ViewModelProvider.Factory> { error("factory not provided") }

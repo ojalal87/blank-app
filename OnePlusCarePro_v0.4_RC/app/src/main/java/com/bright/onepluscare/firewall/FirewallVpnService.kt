@@ -180,6 +180,9 @@ class FirewallVpnService : VpnService() {
     override fun onRevoke() {
         // The user turned the VPN off in system Settings, or another VPN took over.
         shutdown()
+        if (com.bright.onepluscare.work.SecurityWatchStore(this).enabled.value) {
+            com.bright.onepluscare.work.Notifications.showSecurityAlert(this, 7, getString(R.string.watch_fw_off_title), getString(R.string.watch_fw_off_body))
+        }
     }
 
     override fun onDestroy() {
